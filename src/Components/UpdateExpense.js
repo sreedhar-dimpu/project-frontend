@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ExpenseService from '../Services/ExpenseService';
 import {
     Box,
@@ -11,6 +11,7 @@ import {
     Typography,
 } from '@mui/material';
 import '../styles.css';
+import StockService from '../Services/StockService';
 
 const UpdateExpense = () => {
     const [expense, setExpense] = useState({
@@ -18,8 +19,17 @@ const UpdateExpense = () => {
         transactionId: '',
         expenseType: '',
         amount: '',
-        paidDate: ''
+        paidDate: '',
+        source: ''
     });
+    
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        StockService.getAllStocks().then(res => {
+            setProducts(res.data.map(product => product.productName))
+        })
+    },[])
 
     const handleChange = (e) => {
         setExpense({ ...expense, [e.target.name]: e.target.value });
@@ -92,6 +102,21 @@ const UpdateExpense = () => {
                         onChange={handleChange}
                         required
                     />
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Product Name</InputLabel>
+                    <Select
+                        name="source"
+                        value={expense.source}
+                        onChange={handleChange}
+                        required
+                    >
+                        {products.map((p) => (
+                            <MenuItem key={p} value={p}>
+                                {p}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
                 <FormControl fullWidth margin="normal">
                     <TextField

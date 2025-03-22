@@ -90,7 +90,7 @@ const ExpenseList = () => {
                             <TableRow key={expense.id}>
                                 <TableCell>{expense.id}</TableCell>
                                 <TableCell>
-                                    <Link to={`/transactions/get-transaction-by-id/${expense.transactionId}`}>
+                                    <Link to={`/transactions/details/${expense.transactionId}`}>
                                         {expense.transactionId}
                                     </Link>
                                 </TableCell>

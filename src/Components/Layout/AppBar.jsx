@@ -10,6 +10,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Tooltip from '@mui/material/Tooltip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -28,7 +29,7 @@ const AppBarStyled = styled(MuiAppBar, {
   }),
 }));
 
-const AppBar = () => {
+const AppBar = ({onLogout}) => {
   const { toggleColorMode, mode } = useThemeContext();
   const [anchorEl, setAnchorEl] = useState(null);
   
@@ -51,6 +52,11 @@ const AppBar = () => {
           <Tooltip title={mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
             <IconButton color="inherit" onClick={toggleColorMode}>
               {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Logout'}>
+            <IconButton color="inherit" onClick={onLogout}>
+              <LogoutIcon />
             </IconButton>
           </Tooltip>
         </Box>

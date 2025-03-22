@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ExpenseService from '../Services/ExpenseService';
 import { Box, Button, MenuItem, Select, TextField, Typography, FormControl, InputLabel } from '@mui/material';
 import '../styles.css';
+import StockService from '../Services/StockService';
 
 const AddExpense = () => {
     const [expense, setExpense] = useState({
         transactionId: '',
         expenseType: '',
         amount: '',
-        paidDate: ''
+        paidDate: '',
+        unitsPurchased: 0,
+        source: ''
     });
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        StockService.getAllStocks().then(res => {
+            setProducts(res.data.map(product => product.productName))
+        })
+    },[])
 
     const handleChange = (e) => {
         setExpense({ ...expense, [e.target.name]: e.target.value });
@@ -37,7 +47,7 @@ const AddExpense = () => {
             <Typography variant="h4" component="h2" gutterBottom>
                 Add Expense
             </Typography>
-            <Box component="form" onSubmit={handleSubmit} noValidate>
+            <Box component="form" onSubmit={handleSubmit}>
                 <FormControl fullWidth margin="normal">
                     <TextField
                         label="Transaction ID"
@@ -64,11 +74,42 @@ const AddExpense = () => {
                     </Select>
                 </FormControl>
                 <FormControl fullWidth margin="normal">
+                    <InputLabel>Product Name</InputLabel>
+                    <Select
+                        name="source"
+                        value={expense.source}
+                        onChange={handleChange}
+                        required
+                    >
+                        {products.map((p) => (
+                            <MenuItem key={p} value={p}>
+                                {p}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth margin="normal">
                     <TextField
                         label="Amount"
                         type="number"
                         name="amount"
+                        InputProps={{inputProps:{
+                            min: 0,
+                        }}}
                         value={expense.amount}
+                        onChange={handleChange}
+                        required
+                    />
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <TextField
+                        label="Units Purchased"
+                        type="number"
+                        name="unitsPurchased"
+                        InputProps={{inputProps:{
+                            min: 0,
+                        }}}
+                        value={expense.unitsPurchased}
                         onChange={handleChange}
                         required
                     />

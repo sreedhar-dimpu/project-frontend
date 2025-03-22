@@ -54,7 +54,7 @@ export const routes = [
         exact: true,
       },
       {
-        path: "/details/:id",
+        path: "/details/:transactionId",
         name: "Transaction By ID",
         component: TransactionDetail,
         exact: true,

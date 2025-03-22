@@ -14,6 +14,7 @@ import {
     Paper,
 } from '@mui/material';
 import '../styles.css';
+import { Link } from 'react-router-dom';
 
 const RevenueList = () => {
     const [revenues, setRevenues] = useState([]);
@@ -104,7 +105,11 @@ const RevenueList = () => {
                         {revenues.map((revenue) => (
                             <TableRow key={revenue.id}>
                                 <TableCell>{revenue.id}</TableCell>
-                                <TableCell>{revenue.transactionId}</TableCell>
+                                <TableCell>
+                                    <Link to={`/transactions/details/${revenue.transactionId}`}>
+                                        {revenue.transactionId}
+                                    </Link>
+                                </TableCell>
                                 <TableCell>{revenue.source}</TableCell>
                                 <TableCell>{revenue.amount}</TableCell>
                                 <TableCell>{new Date(revenue.receivedDate).toLocaleDateString()}</TableCell>

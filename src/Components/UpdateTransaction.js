@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TransactionService from '../Services/TransactionService';
 import {
     Box,
@@ -11,6 +11,7 @@ import {
     InputLabel,
 } from '@mui/material';
 import '../styles.css';
+import StockService from '../Services/StockService';
 
 const UpdateTransaction = () => {
     const [transaction, setTransaction] = useState({
@@ -24,6 +25,14 @@ const UpdateTransaction = () => {
         expenseType: '',
         quantity: '' // New field
     });
+
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        StockService.getAllStocks().then(res => {
+            setProducts(res.data.map(product => product.productName))
+        })
+    },[])
 
     const handleChange = (e) => {
         setTransaction({ ...transaction, [e.target.name]: e.target.value });
@@ -126,12 +135,19 @@ const UpdateTransaction = () => {
                     />
                 </FormControl>
                 <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Source"
+                    <InputLabel>Product Name</InputLabel>
+                    <Select
                         name="source"
                         value={transaction.source}
                         onChange={handleChange}
-                    />
+                        required
+                    >
+                        {products.map((p) => (
+                            <MenuItem key={p} value={p}>
+                                {p}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
                 <FormControl fullWidth margin="normal">
                     <TextField

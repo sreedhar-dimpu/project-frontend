@@ -25,6 +25,7 @@ const openedMixin = (theme) => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   marginTop: '84px',
+  height: 'calc(100% - 84px)',
   overflowX: 'hidden',
 });
 

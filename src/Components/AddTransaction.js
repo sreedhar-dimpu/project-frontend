@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TransactionService from '../Services/TransactionService';
 import {
     Box,
@@ -11,6 +11,7 @@ import {
     InputLabel,
 } from '@mui/material';
 import '../styles.css';
+import StockService from '../Services/StockService';
 
 const AddTransaction = () => {
     const [transaction, setTransaction] = useState({
@@ -23,6 +24,14 @@ const AddTransaction = () => {
         expenseType: '',
         quantity: '' // New field
     });
+
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        StockService.getAllStocks().then(res => {
+            setProducts(res.data.map(product => product.productName))
+        })
+    },[])
 
     const handleChange = (e) => {
         setTransaction({ ...transaction, [e.target.name]: e.target.value });
@@ -78,6 +87,22 @@ const AddTransaction = () => {
                     </Select>
                 </FormControl>
                 <FormControl fullWidth margin="normal">
+                    <InputLabel>Expense Type</InputLabel>
+                    <Select
+                        name="expenseType"
+                        value={transaction.expenseType}
+                        onChange={handleChange}
+                        required
+                    >
+                        <MenuItem value="">Select Type</MenuItem>
+                        <MenuItem value="Rent">Rent</MenuItem>
+                        <MenuItem value="Utilities">Utilities</MenuItem>
+                        <MenuItem value="Salary">Salary</MenuItem>
+                        <MenuItem value="Supplies">Supplies</MenuItem>
+                        <MenuItem value="Other">Other</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth margin="normal">
                     <TextField
                         label="Amount"
                         type="number"
@@ -114,12 +139,19 @@ const AddTransaction = () => {
                     </Select>
                 </FormControl>
                 <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Product Name"
+                    <InputLabel>Product Name</InputLabel>
+                    <Select
                         name="source"
                         value={transaction.source}
                         onChange={handleChange}
-                    />
+                        required
+                    >
+                        {products.map((p) => (
+                            <MenuItem key={p} value={p}>
+                                {p}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
                 {transaction.type === 'Expense' && (
                     <FormControl fullWidth margin="normal">

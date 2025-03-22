@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RevenueService from '../Services/RevenueService';
 import {
     Box,
     Button,
     FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     TextField,
     Typography,
 } from '@mui/material';
 import '../styles.css';
+import StockService from '../Services/StockService';
 
 const UpdateRevenue = () => {
     const [revenue, setRevenue] = useState({
@@ -18,6 +22,14 @@ const UpdateRevenue = () => {
         receivedDate: '',
         unitsSold: '' // New field
     });
+
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        StockService.getAllStocks().then(res => {
+            setProducts(res.data.map(product => product.productName))
+        })
+    },[])
 
     const handleChange = (e) => {
         setRevenue({ ...revenue, [e.target.name]: e.target.value });
@@ -67,13 +79,19 @@ const UpdateRevenue = () => {
                     />
                 </FormControl>
                 <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Product Name"
+                    <InputLabel>Product Name</InputLabel>
+                    <Select
                         name="source"
                         value={revenue.source}
                         onChange={handleChange}
                         required
-                    />
+                    >
+                        {products.map((p) => (
+                            <MenuItem key={p} value={p}>
+                                {p}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
                 <FormControl fullWidth margin="normal">
                     <TextField

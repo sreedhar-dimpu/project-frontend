@@ -1,19 +1,18 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {  Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from './themes/ThemeProvider';
 import Layout from './Components/Layout/Layout';
 import { routes, flattenRoutes } from './routes/routes';
 
-function App() {
+function App({onLogout}) {
   // Get flattened routes for React Router
   const flattenedRoutes = flattenRoutes(routes);
 
   return (
     <ThemeProvider>
       <CssBaseline />
-      <Router>
-        <Layout>
+        <Layout onLogout={onLogout}>
           <Routes>
             {flattenedRoutes.map((route, index) => {
               if (route.redirectTo) {
@@ -37,7 +36,6 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Layout>
-      </Router>
     </ThemeProvider>
   );
 }
