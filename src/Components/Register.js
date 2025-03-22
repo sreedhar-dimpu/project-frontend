@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserService from '../Services/UserService';
 import '../styles.css';
+import { Button } from '@mui/material';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -132,9 +133,9 @@ const Register = () => {
                         placeholder="Enter your address (optional)"
                     />
                 </div>
-                <button type="submit" disabled={isLoading}>
+                <Button type="submit" disabled={isLoading} variant='contained' fullWidth sx={{marginTop: '1rem'}}>
                     {isLoading ? 'Registering...' : 'Register'}
-                </button>
+                </Button>
                 <p>
                     Already have an account?{' '}
                     <a href="/login" className="toggle-link">Log in</a>

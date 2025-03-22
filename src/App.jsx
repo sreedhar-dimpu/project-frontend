@@ -5,14 +5,14 @@ import { ThemeProvider } from './themes/ThemeProvider';
 import Layout from './Components/Layout/Layout';
 import { routes, flattenRoutes } from './routes/routes';
 
-function App({onLogout}) {
+function App({onLogout, username}) {
   // Get flattened routes for React Router
   const flattenedRoutes = flattenRoutes(routes);
 
   return (
     <ThemeProvider>
       <CssBaseline />
-        <Layout onLogout={onLogout}>
+        <Layout onLogout={onLogout} username={username}>
           <Routes>
             {flattenedRoutes.map((route, index) => {
               if (route.redirectTo) {

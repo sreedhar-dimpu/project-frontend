@@ -14,7 +14,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-const Layout = ({ children, onLogout }) => {
+const Layout = ({ children, onLogout, username }) => {
   const [open, setOpen] = useState(true);
 
   const handleDrawerOpen = () => {
@@ -28,7 +28,7 @@ const Layout = ({ children, onLogout }) => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <CssBaseline />
-      <AppBar onLogout={onLogout} />
+      <AppBar onLogout={onLogout} username={username} />
       <SideNav open={open} handleDrawerClose={handleDrawerClose} />
       <Box component="main" sx={{ 
         flexGrow: 1, 

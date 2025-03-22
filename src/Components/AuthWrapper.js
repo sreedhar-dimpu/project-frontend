@@ -9,11 +9,14 @@ const AuthWrapper = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true)
     const [role, setRole] = useState('');
+    const [username, setUsername] = useState('')
 
     // Synchronize authentication state with localStorage
     useEffect(() => {
         setLoading(true)
         const storedRole = localStorage.getItem('role');
+        const storedname = localStorage.getItem('username')
+        setUsername(storedname)
         if (storedRole) {
             setIsAuthenticated(true);
             setRole(storedRole);
@@ -24,14 +27,16 @@ const AuthWrapper = () => {
         setLoading(false)
     }, []); // Run only on mount
 
-    const handleLoginSuccess = (userRole) => {
-        localStorage.setItem('role', userRole); // Save role in localStorage
+    const handleLoginSuccess = (response) => {
+        localStorage.setItem('role', response.userRole); // Save role in localStorage
+        localStorage.setItem('username', response.username); 
         setIsAuthenticated(true);
-        setRole(userRole); // Update state for immediate reaction
+        setRole(response.role); // Update state for immediate reaction
     };
 
     const handleLogout = () => {
         localStorage.removeItem('role'); // Clear localStorage
+        localStorage.removeItem('username')
         setIsAuthenticated(false);
         setRole(''); // Reset state
     };
@@ -42,13 +47,7 @@ const AuthWrapper = () => {
     if(isAuthenticated){
         return(
         <Routes>{
-            role === 'Admin' ? (
-                <Route path="/*" element={<App onLogout={handleLogout} />} />
-            ) : role === 'Accountant' ? (
-                <Route path="/*" element={<App onLogout={handleLogout} />} />
-            ) : (
-                <Route path="*" element={<p>Unknown role. Contact support.</p>} />
-            )
+            <Route path="/*" element={<App onLogout={handleLogout} username={username} />} />
             }
         </Routes>
         )

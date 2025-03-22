@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserService from '../Services/UserService';
 import '../styles.css';
+import { Box, Button, Card, FormControl, TextField, Typography } from '@mui/material';
 
 const Login = ({ onLoginSuccess }) => {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -20,7 +21,7 @@ const Login = ({ onLoginSuccess }) => {
             if (response.role) {
                 setSuccess('Login successful! Redirecting...');
                 setError('');
-                onLoginSuccess(response.role); // Notify AuthWrapper about login
+                onLoginSuccess(response); // Notify AuthWrapper about login
 
                 // Redirect based on role
                 if (response.role === 'Admin') {
@@ -38,40 +39,38 @@ const Login = ({ onLoginSuccess }) => {
     };
 
     return (
-        <div className="form-container">
-            <h2>Login</h2>
-            {error && <p className="error-message">{error}</p>}
-            {success && <p className="success-message">{success}</p>}
-            <form onSubmit={handleLogin}>
-                <div className="form-group">
-                    <label>Email:</label>
-                    <input
-                        type="email"
+        <Box sx={{width: '420px', margin: '2rem auto'}}>
+        <Card sx={{padding: '1rem'}}>
+            <Typography variant="h2" > Login </Typography>
+            {error && <Typography variant="p" color="error">{error}</Typography>}
+            {success && <Typography variant="p"  color="success">{success}</Typography>}
+            <Box component={'form'} onSubmit={handleLogin}>
+                <FormControl fullWidth margin='normal'>
+                    <TextField type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="Enter your email"
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Password:</label>
-                    <input
+                        label="Email"
+                        required variant='standard' />
+                </FormControl>
+                <FormControl fullWidth margin='normal'>
+                    <TextField
                         type="password"
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="Enter your password"
-                        required
-                    />
-                </div>
-                <button type="submit">Login</button>
-                <p>
+                        label="Password"
+                        required variant='standard' />
+                </FormControl>
+                
+                <Button type="submit" variant='contained' fullWidth sx={{marginTop: '1rem'}}>Login</Button>
+                <Typography variant='p' sx={{marginTop: '1rem', display:"inline-block"}}>
                     Don't have an account?{' '}
-                    <a href="/register" className="toggle-link">Sign up</a>
-                </p>
-            </form>
-        </div>
+                    <Link to="/register" className="toggle-link">Sign up</Link>
+                </Typography>
+            </Box>
+        </Card>
+        </Box>
     );
 };
 

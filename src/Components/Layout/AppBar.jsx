@@ -29,7 +29,7 @@ const AppBarStyled = styled(MuiAppBar, {
   }),
 }));
 
-const AppBar = ({onLogout}) => {
+const AppBar = ({onLogout, username}) => {
   const { toggleColorMode, mode } = useThemeContext();
   const [anchorEl, setAnchorEl] = useState(null);
   
@@ -48,15 +48,16 @@ const AppBar = ({onLogout}) => {
           Accounting Software
         </Typography>
         
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title={mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
-            <IconButton color="inherit" onClick={toggleColorMode}>
-              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-          </Tooltip>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Typography variant={'p'}>{username}</Typography>
           <Tooltip title={'Logout'}>
             <IconButton color="inherit" onClick={onLogout}>
               <LogoutIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+            <IconButton color="inherit" onClick={toggleColorMode}>
+              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
           </Tooltip>
         </Box>
