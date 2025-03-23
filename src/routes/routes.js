@@ -108,6 +108,7 @@ export const routes = [
         name: "Add New",
         component: AddExpense,
         exact: true,
+        roles: ['Admin']
       },
       {
         path: "edit",
@@ -146,11 +147,12 @@ export const routes = [
         exact: true,
         hideInMenu: true
       },
-      {
-        path: "add",
-        name: "Add New",
-        component: AddSale,
-        exact: true,
+      { 
+        path: "add", 
+        name: "Add New", 
+        component: AddSale, 
+        exact: true, 
+        roles: ['Admin']
       },
       {
         path: "edit",
@@ -212,11 +214,17 @@ export const getFullPath = (parentPath, childPath) => {
 };
 
 // Flatten routes for React Router configuration
-export const flattenRoutes = (routes, parentPath = "") => {
+export const flattenRoutes = (routes, parentPath = "", userRole) => {
   return routes.reduce((acc, route) => {
-    const { path, component, children, exact, redirectTo } = route;
+    const { path, component, children, exact, redirectTo, roles } = route;
     const fullPath = getFullPath(parentPath, path);
 
+    // Role-based filtering
+    if (roles && !roles.includes(userRole)) {
+      return acc; // Skip this route if the user doesn't have the required role
+    }
+
+    // Add the route if it has a component or redirection target
     if (component || redirectTo) {
       acc.push({
         path: fullPath,
@@ -226,8 +234,9 @@ export const flattenRoutes = (routes, parentPath = "") => {
       });
     }
 
+    // Recursively process children routes
     if (children) {
-      acc = acc.concat(flattenRoutes(children, fullPath));
+      acc = acc.concat(flattenRoutes(children, fullPath, userRole));
     }
 
     return acc;

@@ -1,66 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import App from '../App';
-// import AccountantApp from '../AccountantApp';
+import React from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
+import App from '../App'; // Admin panel
 import Login from './Login';
-import Register from './Register';
 
 const AuthWrapper = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true)
-    const [role, setRole] = useState('');
-    const [username, setUsername] = useState('')
-
-    // Synchronize authentication state with localStorage
-    useEffect(() => {
-        setLoading(true)
-        const storedRole = localStorage.getItem('role');
-        const storedname = localStorage.getItem('username')
-        setUsername(storedname)
-        if (storedRole) {
-            setIsAuthenticated(true);
-            setRole(storedRole);
-        } else {
-            setIsAuthenticated(false);
-            setRole('');
-        }
-        setLoading(false)
-    }, []); // Run only on mount
-
-    const handleLoginSuccess = (response) => {
-        localStorage.setItem('role', response.userRole); // Save role in localStorage
-        localStorage.setItem('username', response.username); 
-        setIsAuthenticated(true);
-        setRole(response.role); // Update state for immediate reaction
-    };
+    const { isAuthenticated, role, login, logout, loading } = useAuth(); // Use login from AuthContext
+    const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('role'); // Clear localStorage
-        localStorage.removeItem('username')
-        setIsAuthenticated(false);
-        setRole(''); // Reset state
+        logout(); // Call the `logout` function from AuthContext
+        navigate('/login'); // Redirect to login page
     };
 
-    if(loading){
-        return <div>Loading</div>
+    if (loading) {
+        return <div>Loading...</div>;
     }
-    if(isAuthenticated){
-        return(
-        <Routes>{
-            <Route path="/*" element={<App onLogout={handleLogout} username={username} />} />
-            }
-        </Routes>
-        )
+
+    if (isAuthenticated) {
+        return (
+            <Routes>
+                {/* Role-based routing */}
+                {role === 'Admin' && <Route path="/*" element={<App onLogout={handleLogout} />} />}
+                {role === 'Accountant' && <Route path="/*" element={<App onLogout={handleLogout} />} />}
+                {/* Fallback route */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        );
     }
+
     return (
         <Routes>
-            {(
-                <>
-                    <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="*" element={<Navigate to="/login" replace />} />
-                </>
-            )}
+            {/* Pass login function as onLoginSuccess to Login */}
+            <Route
+                path="/login"
+                element={
+                    <Login
+                        onLoginSuccess={(response) => {
+                            login(response.role, response.username); // Set auth state
+                            console.log('User logged in:', response);
+                        }}
+                    />
+                }
+            />
+            <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
     );
 };

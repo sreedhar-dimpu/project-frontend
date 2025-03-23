@@ -10,33 +10,30 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
-const Layout = ({ children, onLogout, username }) => {
+const Layout = ({ children, onLogout, username, role }) => { // Added "role"
   const [open, setOpen] = useState(true);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
 
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <CssBaseline />
       <AppBar onLogout={onLogout} username={username} />
-      <SideNav open={open} handleDrawerClose={handleDrawerClose} />
-      <Box component="main" sx={{ 
-        flexGrow: 1, 
-        p: 3,
-        overflow: 'auto',
-        backgroundColor: (theme) => theme.palette.background.default,
-        borderRadius: 0
-      }}>
+      <SideNav open={open} handleDrawerClose={handleDrawerClose} role={role} /> {/* Pass role */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          overflow: 'auto',
+          backgroundColor: (theme) => theme.palette.background.default,
+          borderRadius: 0,
+        }}
+      >
         <DrawerHeader />
         {children}
       </Box>

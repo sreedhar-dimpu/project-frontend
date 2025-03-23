@@ -17,59 +17,77 @@ const Login = ({ onLoginSuccess }) => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const {data: response} = await UserService.loginUser(formData.email, formData.password);
+            const { data: response } = await UserService.loginUser(formData.email, formData.password);
+            console.log('API Response:', response); // Debugging purpose
+    
             if (response.role) {
                 setSuccess('Login successful! Redirecting...');
                 setError('');
-                onLoginSuccess(response); // Notify AuthWrapper about login
-
+                onLoginSuccess(response); // Call login from AuthContext
+                console.log('got response 4');
+    
                 // Redirect based on role
-                if (response.role === 'Admin') {
-                    navigate('/');
-                } else if (response.role === 'Accountant') {
-                    navigate('/');
-                }
+                navigate(response.role === 'Admin' ? '/admin-dashboard' : '/accountant-dashboard');
+                console.log('got response 5');
+
             } else {
                 throw new Error('Invalid role received from server');
             }
         } catch (err) {
-            setError('Invalid email or password');
+            console.error('Login error:', err); // Debugging
+            setError('Invalid email or password.');
             setSuccess('');
         }
     };
+    
 
     return (
-        <Box sx={{width: '420px', margin: '2rem auto'}}>
-        <Card sx={{padding: '1rem'}}>
-            <Typography variant="h2" > Login </Typography>
-            {error && <Typography variant="p" color="error">{error}</Typography>}
-            {success && <Typography variant="p"  color="success">{success}</Typography>}
-            <Box component={'form'} onSubmit={handleLogin}>
-                <FormControl fullWidth margin='normal'>
-                    <TextField type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        label="Email"
-                        required variant='standard' />
-                </FormControl>
-                <FormControl fullWidth margin='normal'>
-                    <TextField
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        label="Password"
-                        required variant='standard' />
-                </FormControl>
-                
-                <Button type="submit" variant='contained' fullWidth sx={{marginTop: '1rem'}}>Login</Button>
-                <Typography variant='p' sx={{marginTop: '1rem', display:"inline-block"}}>
-                    Don't have an account?{' '}
-                    <Link to="/register" className="toggle-link">Sign up</Link>
-                </Typography>
-            </Box>
-        </Card>
+        <Box sx={{ width: '420px', margin: '2rem auto' }}>
+            <Card sx={{ padding: '1rem' }}>
+                <Typography variant="h4" align="center">Login</Typography>
+                {error && <Typography sx={{ color: 'red', mt: 2, fontSize: '14px' }}>{error}</Typography>}
+                {success && <Typography sx={{ color: 'green', mt: 2, fontSize: '14px' }}>{success}</Typography>}
+                <Box component={'form'} onSubmit={handleLogin}>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            label="Email"
+                            required
+                            variant="standard"
+                        />
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            label="Password"
+                            required
+                            variant="standard"
+                        />
+                    </FormControl>
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        sx={{ marginTop: '1rem' }}
+                    >
+                        Login
+                    </Button>
+                    <Typography
+                        variant="body2"
+                        sx={{ marginTop: '1rem', display: 'block', textAlign: 'center' }}
+                    >
+                        Don't have an account?{' '}
+                        <Link to="/register" className="toggle-link">Sign up</Link>
+                    </Typography>
+                </Box>
+            </Card>
         </Box>
     );
 };
