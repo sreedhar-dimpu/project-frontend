@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,6 +9,10 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
 import { useThemeContext } from '../../themes/ThemeProvider';
 
 const AppBarStyled = styled(MuiAppBar)(({ theme }) => ({
@@ -21,39 +25,56 @@ const AppBarStyled = styled(MuiAppBar)(({ theme }) => ({
 
 const AppBar = ({ onLogout, username }) => {
   const { toggleColorMode, mode } = useThemeContext();
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const handleLogout = () => {
-    console.log('Logout button clicked'); // Debugging log
-    onLogout(); // Trigger parent logout function
+  const handleLogoutClick = () => setLogoutDialogOpen(true);
+  const confirmLogout = () => {
+    setLogoutDialogOpen(false);
+    onLogout();
   };
 
   return (
-    <AppBarStyled position="fixed">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Accounting Software
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {username && (
-            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-              {username}
-            </Typography>
-          )}
-          <Tooltip title="Logout">
-            <IconButton color="inherit" onClick={handleLogout}>
-              <LogoutIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip
-            title={mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+    <>
+      <AppBarStyled position="fixed">
+        <Toolbar sx={{ padding: '0 20px' }}>
+          <Typography
+            variant="h5"
+            component="div"
+            sx={{ flexGrow: 1, fontWeight: 'bold'}}
           >
-            <IconButton color="inherit" onClick={toggleColorMode}>
-              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Toolbar>
-    </AppBarStyled>
+            Accounting Software
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
+            {username && (
+              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                {username}
+              </Typography>
+            )}
+            <Tooltip title="Logout">
+              <IconButton color="inherit" onClick={handleLogoutClick}>
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+              <IconButton
+                color="inherit"
+                onClick={toggleColorMode}
+                sx={{ transition: '0.3s', '&:hover': { color: 'primary.light' } }}
+              >
+                {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Toolbar>
+      </AppBarStyled>
+      <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)}>
+        <DialogTitle>Are you sure you want to logout?</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+          <Button onClick={confirmLogout}>Logout</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
