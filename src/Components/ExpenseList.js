@@ -80,6 +80,8 @@ const ExpenseList = () => {
                             <TableCell>ID</TableCell>
                             <TableCell>Transaction ID</TableCell>
                             <TableCell>Expense Type</TableCell>
+                            <TableCell>Product</TableCell>
+                            <TableCell>Quantity</TableCell>
                             <TableCell>Amount</TableCell>
                             <TableCell>Spent Date</TableCell>
                             <TableCell>Created At</TableCell>
@@ -95,6 +97,8 @@ const ExpenseList = () => {
                                     </Link>
                                 </TableCell>
                                 <TableCell>{expense.expenseType}</TableCell>
+                                <TableCell>{expense.source}</TableCell>
+                                <TableCell>{expense.unitsPurchased}</TableCell>
                                 <TableCell>{expense.amount}</TableCell>
                                 <TableCell>{new Date(expense.paidDate).toLocaleDateString()}</TableCell>
                                 <TableCell>{new Date(expense.createdAt).toLocaleString()}</TableCell>
