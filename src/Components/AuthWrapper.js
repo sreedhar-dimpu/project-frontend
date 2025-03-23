@@ -6,48 +6,42 @@ import Login from './Login';
 import Register from './Register';
 
 const AuthWrapper = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true)
-    const [role, setRole] = useState('');
-    const [username, setUsername] = useState('')
+    const [user, setUser] = useState({})
 
     // Synchronize authentication state with localStorage
     useEffect(() => {
         setLoading(true)
-        const storedRole = localStorage.getItem('role');
-        const storedname = localStorage.getItem('username')
-        setUsername(storedname)
-        if (storedRole) {
-            setIsAuthenticated(true);
-            setRole(storedRole);
-        } else {
-            setIsAuthenticated(false);
-            setRole('');
+        const userString = localStorage.getItem('user')
+        if(userString){
+            try{
+                setUser(JSON.parse(userString))
+            }catch{
+                setUser({})
+            }
+        }else{
+            setUser({})
         }
         setLoading(false)
     }, []); // Run only on mount
 
     const handleLoginSuccess = (response) => {
-        localStorage.setItem('role', response.userRole); // Save role in localStorage
-        localStorage.setItem('username', response.username); 
-        setIsAuthenticated(true);
-        setRole(response.role); // Update state for immediate reaction
+        localStorage.setItem('user', JSON.stringify(response)); 
+        setUser(response)
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('role'); // Clear localStorage
-        localStorage.removeItem('username')
-        setIsAuthenticated(false);
-        setRole(''); // Reset state
+        localStorage.removeItem('user')
+        setUser({}); // Reset state
     };
 
     if(loading){
         return <div>Loading</div>
     }
-    if(isAuthenticated){
+    if(user?.role){
         return(
         <Routes>{
-            <Route path="/*" element={<App onLogout={handleLogout} username={username} />} />
+            <Route path="/*" element={<App onLogout={handleLogout} user={user} />} />
             }
         </Routes>
         )

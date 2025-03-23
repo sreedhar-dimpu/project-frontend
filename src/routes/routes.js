@@ -108,17 +108,20 @@ export const routes = [
         name: "Add New",
         component: AddExpense,
         exact: true,
+        hideOnAccountant: true
       },
       {
         path: "edit",
         name: "Update",
         component: UpdateExpense,
         exact: true,
+        hideOnAccountant: true
       },
       {
         path: "delete",
         name: "Delete",
-        component: DeleteExpense
+        component: DeleteExpense,
+        hideOnAccountant: true
       },
     ],
   },
@@ -151,17 +154,20 @@ export const routes = [
         name: "Add New",
         component: AddSale,
         exact: true,
+        hideOnAccountant: true
       },
       {
         path: "edit",
         name: "Update",
         component: UpdateSale,
         exact: true,
+        hideOnAccountant: true
       },
       {
         path: "delete",
         name: "Delete",
-        component: DeleteSale
+        component: DeleteSale,
+        hideOnAccountant: true
       },
     ],
   },
@@ -214,7 +220,7 @@ export const getFullPath = (parentPath, childPath) => {
 // Flatten routes for React Router configuration
 export const flattenRoutes = (routes, parentPath = "") => {
   return routes.reduce((acc, route) => {
-    const { path, component, children, exact, redirectTo } = route;
+    const { path, component, children, exact, redirectTo, hideOnAccountant } = route;
     const fullPath = getFullPath(parentPath, path);
 
     if (component || redirectTo) {
@@ -223,6 +229,7 @@ export const flattenRoutes = (routes, parentPath = "") => {
         component,
         exact,
         redirectTo,
+        hideOnAccountant
       });
     }
 

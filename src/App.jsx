@@ -1,20 +1,29 @@
 import React from 'react';
 import {  Routes, Route, Navigate } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, Typography } from '@mui/material';
 import { ThemeProvider } from './themes/ThemeProvider';
 import Layout from './Components/Layout/Layout';
 import { routes, flattenRoutes } from './routes/routes';
 
-function App({onLogout, username}) {
+function App({onLogout, user}) {
   // Get flattened routes for React Router
   const flattenedRoutes = flattenRoutes(routes);
 
   return (
     <ThemeProvider>
       <CssBaseline />
-        <Layout onLogout={onLogout} username={username}>
+        <Layout onLogout={onLogout} user={user}>
           <Routes>
             {flattenedRoutes.map((route, index) => {
+              if(route.hideOnAccountant && user?.role==='Accountant'){
+                return (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    element={<Typography variant="h3">This page is disabled for accountant</Typography>}
+                  />
+                )
+              }
               if (route.redirectTo) {
                 return (
                   <Route

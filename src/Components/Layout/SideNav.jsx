@@ -68,7 +68,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-const SideNav = ({ open, handleDrawerClose }) => {
+const SideNav = ({ open, handleDrawerClose, user }) => {
   const theme = useTheme();
   const location = useLocation();
   const [openSubMenus, setOpenSubMenus] = useState({});
@@ -88,6 +88,7 @@ const SideNav = ({ open, handleDrawerClose }) => {
     const renderMenuItems = (items, parentPath = '') => {
     return items.map((item) => {
       if (item.hideInMenu) return null;
+      if(item.hideOnAccountant && user?.role === 'Accountant') return null;
       
       const fullPath = getFullPath(parentPath, item.path);
       const hasChildren = item.children && item.children.length > 0;
@@ -143,6 +144,9 @@ const SideNav = ({ open, handleDrawerClose }) => {
                   .map((child) => {
                     const childFullPath = getFullPath(fullPath, child.path);
                     const childActive = location.pathname === childFullPath;
+                    if(child.hideOnAccountant && user?.role === "Accountant"){
+                      return null
+                    }
                     
                     return (
                       <ListItemButton

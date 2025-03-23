@@ -94,14 +94,14 @@ const Register = () => {
                 </div>
                 <div className="form-group">
                     <label>Role:</label>
-                    <input
-                        type="text"
-                        name="role"
+                    <select name="role"
                         value={formData.role}
                         onChange={handleChange}
-                        placeholder="Enter your role (e.g., admin or accountant)"
-                        required
-                    />
+                        required >
+                        <option value="">Select role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Accountant">Accountant</option>
+                    </select>
                 </div>
                 <div className="form-group">
                     <label>Business Name:</label>

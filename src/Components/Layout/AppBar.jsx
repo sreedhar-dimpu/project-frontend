@@ -29,27 +29,18 @@ const AppBarStyled = styled(MuiAppBar, {
   }),
 }));
 
-const AppBar = ({onLogout, username}) => {
+const AppBar = ({onLogout, user}) => {
   const { toggleColorMode, mode } = useThemeContext();
-  const [anchorEl, setAnchorEl] = useState(null);
   
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   return (
     <AppBarStyled position="fixed" >
       <Toolbar>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Accounting Software
+          {user?.role === 'Admin' ? 'Admin' : 'Accounting'} Software
         </Typography>
-        
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Typography variant={'p'}>{username}</Typography>
+          <Typography variant={'p'}>{user?.username}</Typography>
           <Tooltip title={'Logout'}>
             <IconButton color="inherit" onClick={onLogout}>
               <LogoutIcon />
