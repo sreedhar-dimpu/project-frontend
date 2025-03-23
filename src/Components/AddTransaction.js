@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import TransactionService from '../Services/TransactionService';
 import {
     Box,
@@ -11,7 +11,6 @@ import {
     InputLabel,
 } from '@mui/material';
 import '../styles.css';
-import StockService from '../Services/StockService';
 
 const AddTransaction = () => {
     const [transaction, setTransaction] = useState({
@@ -25,37 +24,79 @@ const AddTransaction = () => {
         quantity: '' // New field
     });
 
-    const [products, setProducts] = useState([])
-
-    useEffect(() => {
-        StockService.getAllStocks().then(res => {
-            setProducts(res.data.map(product => product.productName))
-        })
-    },[])
+    const [errors, setErrors] = useState({}); // Validation errors
 
     const handleChange = (e) => {
         setTransaction({ ...transaction, [e.target.name]: e.target.value });
+        validateField(e.target.name, e.target.value); // Validate field on change
+    };
+
+    const validateField = (name, value) => {
+        let errorMsg = '';
+
+        switch (name) {
+            case 'userId':
+                if (!value) errorMsg = 'User ID is required.';
+                break;
+            case 'type':
+                if (!value) errorMsg = 'Type is required.';
+                break;
+            case 'paymentType':
+                if (!value) errorMsg = 'Payment Type is required.';
+                break;
+            case 'amount':
+                if (!value || isNaN(value) || Number(value) <= 0) errorMsg = 'Amount must be a positive number.';
+                break;
+            case 'transactionDate':
+                if (!value) errorMsg = 'Transaction Date is required.';
+                break;
+            case 'quantity':
+                if (!value || isNaN(value) || Number(value) <= 0) errorMsg = 'Quantity must be a positive number.';
+                break;
+            default:
+                break;
+        }
+
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
+    };
+
+    const validateForm = () => {
+        const validationErrors = {};
+
+        validateField('userId', transaction.userId);
+        validateField('type', transaction.type);
+        validateField('paymentType', transaction.paymentType);
+        validateField('amount', transaction.amount);
+        validateField('transactionDate', transaction.transactionDate);
+        validateField('quantity', transaction.quantity);
+
+        return !Object.values(validationErrors).some((error) => error); // If no errors exist
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        TransactionService.addTransaction(transaction)
-            .then((response) => {
-                alert('Transaction added successfully');
-                setTransaction({
-                    userId: '',
-                    type: '',
-                    paymentType: '',
-                    amount: '',
-                    transactionDate: '',
-                    source: '',
-                    expenseType: '',
-                    quantity: '' // Reset new field
+        if (validateForm()) {
+            TransactionService.addTransaction(transaction)
+                .then((response) => {
+                    alert('Transaction added successfully');
+                    setTransaction({
+                        userId: '',
+                        type: '',
+                        paymentType: '',
+                        amount: '',
+                        transactionDate: '',
+                        source: '',
+                        expenseType: '',
+                        quantity: '' // Reset new field
+                    });
+                    setErrors({}); // Clear errors
+                })
+                .catch((error) => {
+                    alert('There was an error adding the transaction! ' + error);
                 });
-            })
-            .catch((error) => {
-                alert('There was an error adding the transaction! ' + error);
-            });
+        } else {
+            alert('Please correct the errors in the form.');
+        }
     };
 
     return (
@@ -70,6 +111,8 @@ const AddTransaction = () => {
                         name="userId"
                         value={transaction.userId}
                         onChange={handleChange}
+                        error={!!errors.userId}
+                        helperText={errors.userId}
                         required
                     />
                 </FormControl>
@@ -79,28 +122,18 @@ const AddTransaction = () => {
                         name="type"
                         value={transaction.type}
                         onChange={handleChange}
+                        error={!!errors.type}
                         required
                     >
                         <MenuItem value="">Select</MenuItem>
-                        <MenuItem value="Sale">Sale</MenuItem>
+                        <MenuItem value="Revenue">Sale</MenuItem>
                         <MenuItem value="Expense">Expense</MenuItem>
                     </Select>
-                </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <InputLabel>Expense Type</InputLabel>
-                    <Select
-                        name="expenseType"
-                        value={transaction.expenseType}
-                        onChange={handleChange}
-                        required
-                    >
-                        <MenuItem value="">Select Type</MenuItem>
-                        <MenuItem value="Rent">Rent</MenuItem>
-                        <MenuItem value="Utilities">Utilities</MenuItem>
-                        <MenuItem value="Salary">Salary</MenuItem>
-                        <MenuItem value="Supplies">Supplies</MenuItem>
-                        <MenuItem value="Other">Other</MenuItem>
-                    </Select>
+                    {errors.type && (
+                        <Typography color="error" variant="body2">
+                            {errors.type}
+                        </Typography>
+                    )}
                 </FormControl>
                 <FormControl fullWidth margin="normal">
                     <TextField
@@ -109,6 +142,8 @@ const AddTransaction = () => {
                         name="amount"
                         value={transaction.amount}
                         onChange={handleChange}
+                        error={!!errors.amount}
+                        helperText={errors.amount}
                         required
                     />
                 </FormControl>
@@ -119,6 +154,8 @@ const AddTransaction = () => {
                         name="quantity"
                         value={transaction.quantity}
                         onChange={handleChange}
+                        error={!!errors.quantity}
+                        helperText={errors.quantity}
                         required
                     />
                 </FormControl>
@@ -128,6 +165,7 @@ const AddTransaction = () => {
                         name="paymentType"
                         value={transaction.paymentType}
                         onChange={handleChange}
+                        error={!!errors.paymentType}
                         required
                     >
                         <MenuItem value="">Select</MenuItem>
@@ -137,21 +175,19 @@ const AddTransaction = () => {
                         <MenuItem value="Debit Card">Debit Card</MenuItem>
                         <MenuItem value="Other">Other</MenuItem>
                     </Select>
+                    {errors.paymentType && (
+                        <Typography color="error" variant="body2">
+                            {errors.paymentType}
+                        </Typography>
+                    )}
                 </FormControl>
                 <FormControl fullWidth margin="normal">
-                    <InputLabel>Product Name</InputLabel>
-                    <Select
+                    <TextField
+                        label="Product Name"
                         name="source"
                         value={transaction.source}
                         onChange={handleChange}
-                        required
-                    >
-                        {products.map((p) => (
-                            <MenuItem key={p} value={p}>
-                                {p}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    />
                 </FormControl>
                 {transaction.type === 'Expense' && (
                     <FormControl fullWidth margin="normal">
@@ -178,6 +214,8 @@ const AddTransaction = () => {
                         value={transaction.transactionDate}
                         onChange={handleChange}
                         InputLabelProps={{ shrink: true }}
+                        error={!!errors.transactionDate}
+                        helperText={errors.transactionDate}
                         required
                     />
                 </FormControl>
@@ -192,113 +230,7 @@ const AddTransaction = () => {
                 </Button>
             </Box>
         </Box>
-    )
-
-    // return (
-    //     <>
-    //         <h2>Add Transaction</h2>
-    //         <form className="form-container" onSubmit={handleSubmit}>
-    //             <div className="form-group">
-    //                 <label>User ID:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="userId"
-    //                     value={transaction.userId}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Type:</label>
-    //                 <select
-    //                     name="type"
-    //                     value={transaction.type}
-    //                     onChange={handleChange}
-    //                     required
-    //                 >
-    //                     <option value="">Select</option>
-    //                     <option value="Sale">Sale</option>
-    //                     <option value="Expense">Expense</option>
-    //                 </select>
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Amount:</label>
-    //                 <input
-    //                     type="number"
-    //                     name="amount"
-    //                     value={transaction.amount}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Quantity:</label> {/* New input field */}
-    //                 <input
-    //                     type="number"
-    //                     name="quantity"
-    //                     value={transaction.quantity}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Payment Type:</label>
-    //                 <select
-    //                     name="paymentType"
-    //                     value={transaction.paymentType}
-    //                     onChange={handleChange}
-    //                     required
-    //                 >
-    //                     <option value="">Select</option>
-    //                     <option value="Cash">Cash</option>
-    //                     <option value="UPI">UPI</option>
-    //                     <option value="Credit Card">Credit Card</option>
-    //                     <option value="Debit Card">Debit Card</option>
-    //                     <option value="Other">Other</option>
-    //                 </select>
-    //             </div>
-                
-    //                 <div className="form-group">
-    //                     <label>Product Name:</label>
-    //                     <input
-    //                         type="text"
-    //                         name="source"
-    //                         value={transaction.source}
-    //                         onChange={handleChange}
-    //                     />
-    //                 </div>
-                
-    //             {transaction.type === 'Expense' && (
-    //                 <div className="form-group">
-    //                     <label>Expense Type:</label>
-    //                     <select
-    //                         name="expenseType"
-    //                         value={transaction.expenseType}
-    //                         onChange={handleChange}
-    //                     >
-    //                         <option value="">Select</option>
-    //                         <option value="Rent">Rent</option>
-    //                         <option value="Utilities">Utilities</option>
-    //                         <option value="Salary">Salary</option>
-    //                         <option value="Stock Purchase">Stock Purchase</option>
-    //                         <option value="Other">Other</option>
-    //                     </select>
-    //                 </div>
-    //             )}
-    //             <div className="form-group">
-    //                 <label>Transaction Date:</label>
-    //                 <input
-    //                     type="date"
-    //                     name="transactionDate"
-    //                     value={transaction.transactionDate}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <button type="submit">Add Transaction</button>
-    //         </form>
-    //     </>
-    // );
+    );
 };
 
 export default AddTransaction;

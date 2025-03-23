@@ -36,7 +36,7 @@ const AppBar = ({onLogout, user}) => {
   return (
     <AppBarStyled position="fixed" >
       <Toolbar>
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 'bold'}}>
           {user?.role === 'Admin' ? 'Admin' : 'Accounting'} Software
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
