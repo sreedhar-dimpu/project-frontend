@@ -4,6 +4,7 @@ import PaidIcon from '@mui/icons-material/Paid';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import InventoryIcon from '@mui/icons-material/Inventory';
 
+
 // Import page components 
 import Dashboard from '../Components/Home';
 import AllTransactions from '../Components/TransactionList';
@@ -26,6 +27,8 @@ import InventoryDetail from '../Components/GetStockById';
 import AddInventory from '../Components/AddStock';
 import UpdateInventory from '../Components/UpdateStock';
 import DeleteInventory from '../Components/DeleteStock'
+import UsersList from './../Components/UsersList';
+import { SupervisedUserCircleRounded } from '@mui/icons-material';
 
 // Routes configuration with nested routes
 export const routes = [
@@ -207,6 +210,21 @@ export const routes = [
       },
     ],
   },
+  {
+    path: "/users",
+    name: "Users",
+    icon: <SupervisedUserCircleRounded />,
+    hideOnAccountant: true,
+    children:
+    [
+       {
+         path:"",
+         name:"View All Users", 
+         component :UsersList, 
+         hideOnAccountant: true
+        }
+     ]
+  }
 ];
 
 // Function to generate full paths for nested routes
