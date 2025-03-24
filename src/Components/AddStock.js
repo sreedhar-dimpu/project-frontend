@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import StockService from '../Services/StockService';
 import { Box, Button, TextField, Typography, FormControl } from '@mui/material';
-import '../styles.css';
+import { useUser } from '../Context/UserContext';
 
 const AddStock = () => {
+  const { user } = useUser(); // Access the logged-in user's details
   const [stock, setStock] = useState({
     productName: '',
     category: '',
     quantity: '',
     unitPrice: '',
   });
+  const [errors, setErrors] = useState({});
 
-  const [errors, setErrors] = useState({}); // State for validation errors
-
+  // Handle field changes and validation
   const handleChange = (e) => {
     const { name, value } = e.target;
     setStock({ ...stock, [name]: value });
-    validateField(name, value); // Validate each field on change
+    validateField(name, value);
   };
 
   const validateField = (name, value) => {
@@ -24,10 +25,10 @@ const AddStock = () => {
 
     switch (name) {
       case 'productName':
-        if (!value) errorMsg = 'Product Name is required.';
+        if (!value.trim()) errorMsg = 'Product Name is required.';
         break;
       case 'category':
-        if (!value) errorMsg = 'Category is required.';
+        if (!value.trim()) errorMsg = 'Category is required.';
         break;
       case 'quantity':
         if (!value || isNaN(value) || Number(value) <= 0)
@@ -52,7 +53,6 @@ const AddStock = () => {
     validateField('quantity', stock.quantity);
     validateField('unitPrice', stock.unitPrice);
 
-    setErrors(validationErrors);
     return !Object.values(validationErrors).some((error) => error);
   };
 
@@ -60,24 +60,35 @@ const AddStock = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      StockService.addStock(stock)
-        .then(() => {
-          alert('Stock added successfully');
-          setStock({
-            productName: '',
-            category: '',
-            quantity: '',
-            unitPrice: '',
-          });
-          setErrors({}); // Clear errors
-        })
-        .catch((error) => {
-          alert('There was an error adding the stock! ' + error);
-        });
+        const stockWithUserId = { ...stock, userId: user?.id }; // Add userId from context
+
+        // Debugging: Log the payload
+        console.log('Payload:', stockWithUserId);
+
+        StockService.addStock(stockWithUserId)
+            .then((response) => {
+                console.log('Response:', response); // Debugging: Log the response
+                alert('Stock added successfully!');
+                setStock({
+                    productName: '',
+                    category: '',
+                    quantity: '',
+                    unitPrice: '',
+                });
+                setErrors({});
+            })
+            .catch((error) => {
+                console.error('Error adding stock:', error);
+                if (error.response) {
+                    alert(`Error: ${error.response.data.message || 'Unknown error'}`);
+                } else {
+                    alert('Failed to connect to the server.');
+                }
+            });
     } else {
-      alert('Please correct the errors in the form.');
+        alert('Please correct the errors in the form.');
     }
-  };
+};
 
   return (
     <Box sx={{ maxWidth: 600, margin: '0 auto', padding: 2 }}>

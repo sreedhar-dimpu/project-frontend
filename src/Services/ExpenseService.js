@@ -35,6 +35,10 @@ class ExpenseService {
         return axios.get(`${API_URL}/totalvalue/month/${year}/${month}`);
     }
 
+    getTotalExpensesByMonthAndUserId(year, month, userId) {
+        return axios.get(`${API_URL}/user/${userId}/month/${year}/${month}/total`);
+    }
+
     downloadExpensePDF(reportType, year, month, isExpense) {
         return axios.get(`${API_URL}/pdf/${reportType}/${year}/${month}/${isExpense}`, {
             responseType: 'blob'

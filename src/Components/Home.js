@@ -4,6 +4,7 @@ import ExpenseService from '../Services/ExpenseService';
 import StockService from '../Services/StockService';
 import '../styles.css';
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { useUser } from '../Context/UserContext';
 
 const Home = () => {
   const [totalSales, setTotalSales] = useState(0);
@@ -12,40 +13,48 @@ const Home = () => {
   const [profitLoss, setProfitLoss] = useState(0);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const { user } = useUser(); 
 
   useEffect(() => {
     const fetchTotalSales = async () => {
-      try {
-        const response = await RevenueService.getTotalRevenueByMonth(year, month);
-        setTotalSales(response.data);
-      } catch (error) {
-        console.error('Error fetching total sales:', error);
-      }
-    };
+        try {
+            if (user && user.id) { // Ensure user and user.id exist
+              const response = await RevenueService.getTotalRevenueByMonthAndUserId(year, month, user.id); // Use user.id here
+              setTotalSales(response.data);
+            }
+          } catch (error) {
+            console.error('Error fetching total expenses:', error);
+          }
+        };
 
     const fetchTotalExpenses = async () => {
-      try {
-        const response = await ExpenseService.getTotalExpensesByMonth(year, month);
-        setTotalExpenses(response.data);
-      } catch (error) {
-        console.error('Error fetching total expenses:', error);
-      }
-    };
+        try {
+          if (user && user.id) { // Ensure user and user.id exist
+            const response = await ExpenseService.getTotalExpensesByMonthAndUserId(year, month, user.id); // Use user.id here
+            setTotalExpenses(response.data);
+          }
+        } catch (error) {
+          console.error('Error fetching total expenses:', error);
+        }
+      };
+  
 
     const fetchTotalStock = async () => {
-      try {
-        const response = await StockService.getAllStocks();
-        const totalQuantity = response.data.reduce((sum, stock) => sum + stock.quantity, 0);
-        setTotalStock(totalQuantity);
-      } catch (error) {
-        console.error('Error fetching total stock:', error);
-      }
-    };
+        try {
+          if (user && user.id) { // Ensure user and user.id exist
+            const response = await StockService.getMonthlyStocksQuantity(year, month, user.id); // Call the method
+            setTotalStock(response.data); // Set total stock quantity
+          }
+        } catch (error) {
+          console.error('Error fetching total stock:', error);
+        }
+      };
+  
 
     fetchTotalSales();
     fetchTotalExpenses();
     fetchTotalStock();
-  }, [year, month]);
+  }, [year, month, user]);
 
   useEffect(() => {
     setProfitLoss(totalSales - totalExpenses);

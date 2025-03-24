@@ -36,6 +36,10 @@ class RevenueService {
         return axios.get(`${API_URL}/totalvalue/month/${year}/${month}`);
     }
 
+    getTotalRevenueByMonthAndUserId(year, month, userId) {
+        return axios.get(`${API_URL}/user/${userId}/month/${year}/${month}/total`);
+    }
+
     getTotalRevenue() {
         return axios.get(`${API_URL}/totalvalue`);
     }

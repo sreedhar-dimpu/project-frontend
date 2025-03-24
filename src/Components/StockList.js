@@ -14,21 +14,28 @@ import {
     Paper,
 } from '@mui/material';
 import '../styles.css';
+import { useUser } from '../Context/UserContext';
 
 const StockList = () => {
     const [stocks, setStocks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useUser();
 
     useEffect(() => {
-        StockService.getAllStocks()
-            .then((response) => {
-                setStocks(response.data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching stocks:', error);
-                setLoading(false);
-            });
+        const fetchStocks = async () => {
+            if (user && user.id) {
+                try {
+                    const response = await StockService.getStocksByUserId(user.id);
+                    setStocks(response.data);
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching stocks:', error);
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchStocks();
     }, []);
 
     const downloadMonthlyReport = async () => {
