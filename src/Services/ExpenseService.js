@@ -11,6 +11,10 @@ class ExpenseService {
         return axios.get(`${API_URL}/${id}`);
     }
 
+    getExpensesByUserId(userId) {
+        return axios.get(`${API_URL}/userid/${userId}`); 
+    }
+
     addExpense(expense) {
         return axios.post(API_URL, expense);
     }

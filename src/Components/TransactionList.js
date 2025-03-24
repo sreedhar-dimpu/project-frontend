@@ -3,24 +3,34 @@ import TransactionService from '../Services/TransactionService';
 import '../styles.css';
 import { Link } from 'react-router-dom';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { useUser } from '../Context/UserContext'; // Import UserContext to access user data
 
 const TransactionsList = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useUser(); // Access the logged-in user
 
     useEffect(() => {
         const fetchTransactions = async () => {
-            try {
-                const response = await TransactionService.getAllTransactions();
-                setTransactions(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching transactions:', error);
+            console.log("user1: ", user );
+            if (user && user.id) { // Ensure user is logged in and user ID is available
+                try {
+                    console.log("user2: ", user );
+                    const response = await TransactionService.getUserTransactions(user.id); // API call with user ID
+                    console.log("user3: ", user );
+                    setTransactions(response.data); // Set user-specific transactions
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching transactions:', error);
+                    setLoading(false);
+                }
+            } else {
+                console.error('User is not logged in or user ID is missing');
                 setLoading(false);
             }
         };
 
-        fetchTransactions();
+        fetchTransactions(); // Call function to fetch transactions
     }, []);
 
     if (loading) {

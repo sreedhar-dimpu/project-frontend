@@ -3,12 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import UserService from '../Services/UserService';
 import '../styles.css';
 import { Box, Button, Card, FormControl, TextField, Typography } from '@mui/material';
+import { useUser } from '../Context/UserContext'; // Import the custom hook
+
 
 const Login = ({ onLoginSuccess }) => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
+    const { setUser } = useUser();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,6 +22,7 @@ const Login = ({ onLoginSuccess }) => {
         try {
             const {data: response} = await UserService.loginUser(formData.email, formData.password);
             if (response.role) {
+                setUser(response);
                 setSuccess('Login successful! Redirecting...');
                 setError('');
                 onLoginSuccess(response); // Notify AuthWrapper about login

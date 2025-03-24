@@ -15,22 +15,26 @@ import {
 } from '@mui/material';
 import '../styles.css';
 import { Link } from 'react-router-dom';
+import { useUser } from '../Context/UserContext'; 
 
 const RevenueList = () => {
     const [revenues, setRevenues] = useState([]);
     const [loading, setLoading] = useState(true);
     const [year, setYear] = useState(new Date().getFullYear());
     const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const { user } = useUser();
 
     useEffect(() => {
         const fetchRevenues = async () => {
-            try {
-                const response = await RevenueService.getAllRevenues();
-                setRevenues(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching revenues:', error);
-                setLoading(false);
+            if (user && user.id) {
+                try {
+                    const response = await RevenueService.getRevenuesByUserId(user.id); // Fetch revenues for user
+                    setRevenues(response.data);
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching revenues:', error);
+                    setLoading(false);
+                }
             }
         };
 

@@ -11,10 +11,12 @@ import {
     InputLabel,
 } from '@mui/material';
 import '../styles.css';
+import { useUser } from '../Context/UserContext'; // Import the UserContext to get user details
 
 const AddTransaction = () => {
+    const { user } = useUser(); // Access the logged-in user's details
     const [transaction, setTransaction] = useState({
-        userId: '',
+        userId: user?.id || '', // Set default userId from logged-in user
         type: '',
         paymentType: '',
         amount: '',
@@ -35,9 +37,6 @@ const AddTransaction = () => {
         let errorMsg = '';
 
         switch (name) {
-            case 'userId':
-                if (!value) errorMsg = 'User ID is required.';
-                break;
             case 'type':
                 if (!value) errorMsg = 'Type is required.';
                 break;
@@ -63,7 +62,6 @@ const AddTransaction = () => {
     const validateForm = () => {
         const validationErrors = {};
 
-        validateField('userId', transaction.userId);
         validateField('type', transaction.type);
         validateField('paymentType', transaction.paymentType);
         validateField('amount', transaction.amount);
@@ -80,7 +78,7 @@ const AddTransaction = () => {
                 .then((response) => {
                     alert('Transaction added successfully');
                     setTransaction({
-                        userId: '',
+                        userId: user?.id || '', // Reset userId to the logged-in user
                         type: '',
                         paymentType: '',
                         amount: '',
@@ -110,10 +108,7 @@ const AddTransaction = () => {
                         label="User ID"
                         name="userId"
                         value={transaction.userId}
-                        onChange={handleChange}
-                        error={!!errors.userId}
-                        helperText={errors.userId}
-                        required
+                        disabled // Make the field read-only as it is set automatically
                     />
                 </FormControl>
                 <FormControl fullWidth margin="normal">
@@ -147,18 +142,20 @@ const AddTransaction = () => {
                         required
                     />
                 </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Quantity"
-                        type="number"
-                        name="quantity"
-                        value={transaction.quantity}
-                        onChange={handleChange}
-                        error={!!errors.quantity}
-                        helperText={errors.quantity}
-                        required
-                    />
-                </FormControl>
+                {transaction.expenseType === 'Stock Purchase' && (
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            label="Quantity"
+                            type="number"
+                            name="quantity"
+                            value={transaction.quantity}
+                            onChange={handleChange}
+                            error={!!errors.quantity}
+                            helperText={errors.quantity}
+                            required
+                        />
+                    </FormControl>
+                )}
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Payment Type</InputLabel>
                     <Select

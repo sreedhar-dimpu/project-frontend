@@ -11,6 +11,10 @@ class TransactionService {
         return axios.get(`${API_URL}/${id}`);
     }
 
+    getUserTransactions = (userId) => {
+        return axios.get(`${API_URL}/user/${userId}`);
+    };
+
     addTransaction(transaction) {
         return axios.post(API_URL, transaction);
     }

@@ -15,22 +15,26 @@ import {
     Typography,
     Paper,
 } from '@mui/material';
+import { useUser } from '../Context/UserContext'; 
 
 const ExpenseList = () => {
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [year, setYear] = useState(new Date().getFullYear());
     const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const { user } = useUser();
 
     useEffect(() => {
         const fetchExpenses = async () => {
-            try {
-                const response = await ExpenseService.getAllExpenses();
-                setExpenses(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching expenses:', error);
-                setLoading(false);
+            if (user && user.id) { // Ensure `user.id` is available
+                try {
+                    const response = await ExpenseService.getExpensesByUserId(user.id); // Fetch user-specific expenses
+                    setExpenses(response.data);
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching expenses:', error);
+                    setLoading(false);
+                }
             }
         };
 

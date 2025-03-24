@@ -11,6 +11,11 @@ class RevenueService {
         return axios.get(`${API_URL}/${id}`);
     }
 
+    getRevenuesByUserId(userId) {
+        return axios.get(`${API_URL}/userid/${userId}`);
+    }
+
+
     addRevenue(revenue) {
         return axios.post(API_URL, revenue);
     }
