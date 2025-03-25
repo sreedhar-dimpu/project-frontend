@@ -99,22 +99,24 @@ const AddTransaction = () => {
                         <MenuItem value="Expense">Expense</MenuItem>
                     </Select>
                 </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <InputLabel>Expense Type</InputLabel>
-                    <Select
-                        name="expenseType"
-                        value={transaction.expenseType}
-                        onChange={handleChange}
-                        required
-                    >
-                        <MenuItem value="">Select Type</MenuItem>
-                        <MenuItem value="Rent">Rent</MenuItem>
-                        <MenuItem value="Utilities">Utilities</MenuItem>
-                        <MenuItem value="Salary">Salary</MenuItem>
-                        <MenuItem value="Supplies">Supplies</MenuItem>
-                        <MenuItem value="Other">Other</MenuItem>
-                    </Select>
-                </FormControl>
+                {transaction.type === 'Expense' && (
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Expense Type</InputLabel>
+                        <Select
+                            name="expenseType"
+                            value={transaction.expenseType}
+                            onChange={handleChange}
+                            required
+                        >
+                            <MenuItem value="">Select Type</MenuItem>
+                            <MenuItem value="Rent">Rent</MenuItem>
+                            <MenuItem value="Utilities">Utilities</MenuItem>
+                            <MenuItem value="Salary">Salary</MenuItem>
+                            <MenuItem value="Supplies">Supplies</MenuItem>
+                            <MenuItem value="Other">Other</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
                 <FormControl fullWidth margin="normal">
                     <TextField
                         label="Amount"
@@ -166,23 +168,6 @@ const AddTransaction = () => {
                         ))}
                     </Select>
                 </FormControl>
-                {transaction.type === 'Expense' && (
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel>Expense Type</InputLabel>
-                        <Select
-                            name="expenseType"
-                            value={transaction.expenseType}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="">Select</MenuItem>
-                            <MenuItem value="Rent">Rent</MenuItem>
-                            <MenuItem value="Utilities">Utilities</MenuItem>
-                            <MenuItem value="Salary">Salary</MenuItem>
-                            <MenuItem value="Stock Purchase">Stock Purchase</MenuItem>
-                            <MenuItem value="Other">Other</MenuItem>
-                        </Select>
-                    </FormControl>
-                )}
                 <FormControl fullWidth margin="normal">
                     <TextField
                         label="Transaction Date"
@@ -205,113 +190,7 @@ const AddTransaction = () => {
                 </Button>
             </Box>
         </Box>
-    )
-
-    // return (
-    //     <>
-    //         <h2>Add Transaction</h2>
-    //         <form className="form-container" onSubmit={handleSubmit}>
-    //             <div className="form-group">
-    //                 <label>User ID:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="userId"
-    //                     value={transaction.userId}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Type:</label>
-    //                 <select
-    //                     name="type"
-    //                     value={transaction.type}
-    //                     onChange={handleChange}
-    //                     required
-    //                 >
-    //                     <option value="">Select</option>
-    //                     <option value="Sale">Sale</option>
-    //                     <option value="Expense">Expense</option>
-    //                 </select>
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Amount:</label>
-    //                 <input
-    //                     type="number"
-    //                     name="amount"
-    //                     value={transaction.amount}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Quantity:</label> {/* New input field */}
-    //                 <input
-    //                     type="number"
-    //                     name="quantity"
-    //                     value={transaction.quantity}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Payment Type:</label>
-    //                 <select
-    //                     name="paymentType"
-    //                     value={transaction.paymentType}
-    //                     onChange={handleChange}
-    //                     required
-    //                 >
-    //                     <option value="">Select</option>
-    //                     <option value="Cash">Cash</option>
-    //                     <option value="UPI">UPI</option>
-    //                     <option value="Credit Card">Credit Card</option>
-    //                     <option value="Debit Card">Debit Card</option>
-    //                     <option value="Other">Other</option>
-    //                 </select>
-    //             </div>
-                
-    //                 <div className="form-group">
-    //                     <label>Product Name:</label>
-    //                     <input
-    //                         type="text"
-    //                         name="source"
-    //                         value={transaction.source}
-    //                         onChange={handleChange}
-    //                     />
-    //                 </div>
-                
-    //             {transaction.type === 'Expense' && (
-    //                 <div className="form-group">
-    //                     <label>Expense Type:</label>
-    //                     <select
-    //                         name="expenseType"
-    //                         value={transaction.expenseType}
-    //                         onChange={handleChange}
-    //                     >
-    //                         <option value="">Select</option>
-    //                         <option value="Rent">Rent</option>
-    //                         <option value="Utilities">Utilities</option>
-    //                         <option value="Salary">Salary</option>
-    //                         <option value="Stock Purchase">Stock Purchase</option>
-    //                         <option value="Other">Other</option>
-    //                     </select>
-    //                 </div>
-    //             )}
-    //             <div className="form-group">
-    //                 <label>Transaction Date:</label>
-    //                 <input
-    //                     type="date"
-    //                     name="transactionDate"
-    //                     value={transaction.transactionDate}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <button type="submit">Add Transaction</button>
-    //         </form>
-    //     </>
-    // );
+    );
 };
 
 export default AddTransaction;
