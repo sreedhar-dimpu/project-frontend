@@ -35,9 +35,15 @@ class TransactionService {
         return axios.get(`${API_URL}/profit-loss/${year}/${month}`);
     }
 
-    downloadProfitLossPDF(year, month) {
-        return axios.get(`${API_URL}/profit-loss/pdf/${year}/${month}`, {
-            responseType: 'blob'
+    // downloadProfitLossPDF(year, month) {
+    //     return axios.get(`${API_URL}/profit-loss/pdf/${year}/${month}`, {
+    //         responseType: 'blob'
+    //     });
+    // }
+
+    downloadProfitLossPDF(year, month, userId) {
+        return axios.get(`${API_URL}/profit-loss/pdf/${year}/${month}?userId=${userId}`, {
+            responseType: 'blob',
         });
     }
 }

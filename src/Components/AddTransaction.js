@@ -23,7 +23,7 @@ const AddTransaction = () => {
         transactionDate: '',
         source: '',
         expenseType: '',
-        quantity: '' // New field
+        quantity: '', // New field
     });
 
     const [errors, setErrors] = useState({}); // Validation errors
@@ -44,13 +44,15 @@ const AddTransaction = () => {
                 if (!value) errorMsg = 'Payment Type is required.';
                 break;
             case 'amount':
-                if (!value || isNaN(value) || Number(value) <= 0) errorMsg = 'Amount must be a positive number.';
+                if (!value || isNaN(value) || Number(value) <= 0)
+                    errorMsg = 'Amount must be a positive number.';
                 break;
             case 'transactionDate':
                 if (!value) errorMsg = 'Transaction Date is required.';
                 break;
             case 'quantity':
-                if (!value || isNaN(value) || Number(value) <= 0) errorMsg = 'Quantity must be a positive number.';
+                if (!value || isNaN(value) || Number(value) <= 0)
+                    errorMsg = 'Quantity must be a positive number.';
                 break;
             default:
                 break;
@@ -75,7 +77,7 @@ const AddTransaction = () => {
         e.preventDefault();
         if (validateForm()) {
             TransactionService.addTransaction(transaction)
-                .then((response) => {
+                .then(() => {
                     alert('Transaction added successfully');
                     setTransaction({
                         userId: user?.id || '', // Reset userId to the logged-in user
@@ -85,7 +87,7 @@ const AddTransaction = () => {
                         transactionDate: '',
                         source: '',
                         expenseType: '',
-                        quantity: '' // Reset new field
+                        quantity: '', // Reset new field
                     });
                     setErrors({}); // Clear errors
                 })
@@ -130,19 +132,24 @@ const AddTransaction = () => {
                         </Typography>
                     )}
                 </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Amount"
-                        type="number"
-                        name="amount"
-                        value={transaction.amount}
-                        onChange={handleChange}
-                        error={!!errors.amount}
-                        helperText={errors.amount}
-                        required
-                    />
-                </FormControl>
-                {transaction.expenseType === 'Stock Purchase' && (
+                {transaction.type === 'Expense' && (
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Expense Type</InputLabel>
+                        <Select
+                            name="expenseType"
+                            value={transaction.expenseType}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value="">Select</MenuItem>
+                            <MenuItem value="Rent">Rent</MenuItem>
+                            <MenuItem value="Utilities">Utilities</MenuItem>
+                            <MenuItem value="Salary">Salary</MenuItem>
+                            <MenuItem value="Stock Purchase">Stock Purchase</MenuItem>
+                            <MenuItem value="Other">Other</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+                {(transaction.type === 'Revenue' || transaction.expenseType === 'Stock Purchase') && (
                     <FormControl fullWidth margin="normal">
                         <TextField
                             label="Quantity"
@@ -152,6 +159,37 @@ const AddTransaction = () => {
                             onChange={handleChange}
                             error={!!errors.quantity}
                             helperText={errors.quantity}
+                            required
+                        />
+                    </FormControl>
+                )}
+                {(transaction.type === 'Revenue' || transaction.expenseType === 'Stock Purchase') && (
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            label="Product Name"
+                            name="source"
+                            value={transaction.source}
+                            onChange={handleChange}
+                            error={!!errors.source}
+                            helperText={
+                                transaction.type === 'Revenue'
+                                    ? 'Required for Sale'
+                                    : 'Required for Stock Purchase'
+                            }
+                            required
+                        />
+                    </FormControl>
+                )}
+                {transaction.type !== '' && (
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            label="Amount"
+                            type="number"
+                            name="amount"
+                            value={transaction.amount}
+                            onChange={handleChange}
+                            error={!!errors.amount}
+                            helperText={errors.amount}
                             required
                         />
                     </FormControl>
@@ -178,31 +216,6 @@ const AddTransaction = () => {
                         </Typography>
                     )}
                 </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Product Name"
-                        name="source"
-                        value={transaction.source}
-                        onChange={handleChange}
-                    />
-                </FormControl>
-                {transaction.type === 'Expense' && (
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel>Expense Type</InputLabel>
-                        <Select
-                            name="expenseType"
-                            value={transaction.expenseType}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="">Select</MenuItem>
-                            <MenuItem value="Rent">Rent</MenuItem>
-                            <MenuItem value="Utilities">Utilities</MenuItem>
-                            <MenuItem value="Salary">Salary</MenuItem>
-                            <MenuItem value="Stock Purchase">Stock Purchase</MenuItem>
-                            <MenuItem value="Other">Other</MenuItem>
-                        </Select>
-                    </FormControl>
-                )}
                 <FormControl fullWidth margin="normal">
                     <TextField
                         label="Transaction Date"

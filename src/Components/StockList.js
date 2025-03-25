@@ -68,14 +68,14 @@ const StockList = () => {
             <Typography variant="h4" component="h2" gutterBottom>
                 Stocks List
             </Typography>
-            <Button
+            {/* <Button
                 variant="contained"
                 color="primary"
                 onClick={downloadMonthlyReport}
                 sx={{ marginBottom: 2 }}
             >
                 Download Monthly Report
-            </Button>
+            </Button> */}
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>

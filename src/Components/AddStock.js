@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import StockService from '../Services/StockService';
 import { Box, Button, TextField, Typography, FormControl } from '@mui/material';
-import { useUser } from '../Context/UserContext';
+import { useUser } from '../Context/UserContext'; // Import the UserContext to get user details
 
 const AddStock = () => {
   const { user } = useUser(); // Access the logged-in user's details
   const [stock, setStock] = useState({
+    userId: user?.id || '', // Set default userId from context
     productName: '',
     category: '',
     quantity: '',
@@ -60,35 +61,33 @@ const AddStock = () => {
     e.preventDefault();
 
     if (validateForm()) {
-        const stockWithUserId = { ...stock, userId: user?.id }; // Add userId from context
+      // Include userId when submitting the stock
+      const stockWithUserId = { ...stock, userId: user?.id };
 
-        // Debugging: Log the payload
-        console.log('Payload:', stockWithUserId);
-
-        StockService.addStock(stockWithUserId)
-            .then((response) => {
-                console.log('Response:', response); // Debugging: Log the response
-                alert('Stock added successfully!');
-                setStock({
-                    productName: '',
-                    category: '',
-                    quantity: '',
-                    unitPrice: '',
-                });
-                setErrors({});
-            })
-            .catch((error) => {
-                console.error('Error adding stock:', error);
-                if (error.response) {
-                    alert(`Error: ${error.response.data.message || 'Unknown error'}`);
-                } else {
-                    alert('Failed to connect to the server.');
-                }
-            });
+      StockService.addStock(stockWithUserId)
+        .then(() => {
+          alert('Stock added successfully!');
+          setStock({
+            userId: user?.id || '', // Reset userId to the logged-in user
+            productName: '',
+            category: '',
+            quantity: '',
+            unitPrice: '',
+          });
+          setErrors({});
+        })
+        .catch((error) => {
+          console.error('Error adding stock:', error);
+          if (error.response) {
+            alert(`Error: ${error.response.data.message || 'Unknown error'}`);
+          } else {
+            alert('Failed to connect to the server.');
+          }
+        });
     } else {
-        alert('Please correct the errors in the form.');
+      alert('Please correct the errors in the form.');
     }
-};
+  };
 
   return (
     <Box sx={{ maxWidth: 600, margin: '0 auto', padding: 2 }}>
@@ -96,6 +95,14 @@ const AddStock = () => {
         Add Stock
       </Typography>
       <Box component="form" onSubmit={handleSubmit} noValidate>
+        <FormControl fullWidth margin="normal">
+          <TextField
+            label="User ID"
+            name="userId"
+            value={stock.userId}
+            disabled // Make the field read-only as it is set automatically
+          />
+        </FormControl>
         <FormControl fullWidth margin="normal">
           <TextField
             label="Product Name"
