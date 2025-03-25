@@ -55,6 +55,13 @@ class RevenueService {
             responseType: 'blob'
         });
     }
+
+    downloadProfitLossPDF(year, month) {
+        return axios.get(`${API_URL}/profit-loss/${year}/${month}`, {
+            responseType: 'blob', // Ensure the response is treated as a blob for downloading files
+        });
+    }
+
 }
 
 export default new RevenueService();

@@ -1,20 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import StockService from '../Services/StockService';
-import { Box, Button, TextField, Typography } from '@mui/material';
-import '../styles.css';
+import { Box, Button, Typography } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const DeleteStock = () => {
-    const [id, setId] = useState('');
+    const location = useLocation(); // Access the stock object passed via navigate state
+    const navigate = useNavigate();
+    const stock = location.state?.stock; // Retrieve the stock object from state
+
+    // Ensure stock exists; redirect to StockList if not found
+    if (!stock) {
+        alert('No stock selected for deletion.');
+        navigate('/'); // Redirect back to StockList if no stock object is found
+        return null;
+    }
 
     const handleDelete = () => {
-        StockService.deleteStock(id)
-            .then(() => {
-                alert('Stock deleted successfully');
-                setId('');
-            })
-            .catch((error) => {
-                alert('There was an error deleting the stock! ' + error);
-            });
+        if (window.confirm(`Are you sure you want to delete the stock: ${stock.productName}?`)) {
+            StockService.deleteStock(stock.id)
+                .then(() => {
+                    alert('Stock deleted successfully!');
+                    navigate('/'); // Redirect to StockList after deletion
+                })
+                .catch((error) => {
+                    alert('There was an error deleting the stock! ' + error);
+                });
+        }
     };
 
     return (
@@ -22,47 +33,41 @@ const DeleteStock = () => {
             <Typography variant="h4" component="h2" gutterBottom>
                 Delete Stock
             </Typography>
-            <Box component="form" onSubmit={handleDelete} noValidate>
-                <TextField
-                    label="Stock ID"
-                    type="number"
-                    value={id}
-                    onChange={(e) => setId(e.target.value)}
-                    placeholder="Enter Stock ID"
-                    fullWidth
-                    required
-                    margin="normal"
-                />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="error"
-                    fullWidth
-                    sx={{ marginTop: 2 }}
-                >
-                    Delete Stock
-                </Button>
-            </Box>
+            <Typography variant="body1" gutterBottom>
+                Are you sure you want to delete this stock?
+            </Typography>
+            <Typography variant="body2">
+                <strong>Product Name:</strong> {stock.productName}
+            </Typography>
+            <Typography variant="body2">
+                <strong>Category:</strong> {stock.category}
+            </Typography>
+            <Typography variant="body2">
+                <strong>Quantity:</strong> {stock.quantity}
+            </Typography>
+            <Typography variant="body2">
+                <strong>Unit Price:</strong> ${stock.unitPrice}
+            </Typography>
+            <Button
+                variant="contained"
+                color="error"
+                fullWidth
+                sx={{ marginTop: 2 }}
+                onClick={handleDelete}
+            >
+                Confirm Delete
+            </Button>
+            <Button
+                variant="outlined"
+                color="primary"
+                fullWidth
+                sx={{ marginTop: 2 }}
+                onClick={() => navigate('/')} // Navigate back to StockList if canceling
+            >
+                Cancel
+            </Button>
         </Box>
     );
-    // return (
-    //     <>
-    //         <h2>Delete Stock</h2>
-    //         <form className="form-container" onSubmit={(e) => { e.preventDefault(); handleDelete(); }}>
-    //             <div className="form-group">
-    //                 <label>Stock ID:</label>
-    //                 <input
-    //                     type="number"
-    //                     value={id}
-    //                     onChange={(e) => setId(e.target.value)}
-    //                     placeholder="Enter Stock ID"
-    //                     required
-    //                 />
-    //             </div>
-    //             <button type="submit">Delete Stock</button>
-    //         </form>
-    //     </>
-    // );
 };
 
 export default DeleteStock;

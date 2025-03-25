@@ -1,43 +1,75 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'; // To access state
 import StockService from '../Services/StockService';
-import {
-    Box,
-    Button,
-    FormControl,
-    TextField,
-    Typography,
-} from '@mui/material';
-import '../styles.css';
+import { Box, Button, TextField, Typography, FormControl } from '@mui/material';
 
 const UpdateStock = () => {
-    const [id, setId] = useState('');
-    const [stock, setStock] = useState({
-        productName: '',
-        category: '',
-        quantity: '',
-        unitPrice: ''
-    });
+    const location = useLocation(); // Access the state passed via navigate
+    const stockFromState = location.state?.stock || {}; // Retrieve the stock object
+    const [stock, setStock] = useState(stockFromState); // Initialize the state with the passed stock
+    const [errors, setErrors] = useState({}); // Validation errors
+
+    useEffect(() => {
+        if (!stockFromState.id) {
+            alert('No stock selected for editing.');
+            // Redirect back to the stock list if no stock data is found
+        }
+    }, [stockFromState]);
 
     const handleChange = (e) => {
-        setStock({ ...stock, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setStock({ ...stock, [name]: value });
+        validateField(name, value);
+    };
+
+    const validateField = (name, value) => {
+        let errorMsg = '';
+        switch (name) {
+            case 'productName':
+                if (!value.trim()) errorMsg = 'Product Name is required.';
+                break;
+            case 'category':
+                if (!value.trim()) errorMsg = 'Category is required.';
+                break;
+            case 'quantity':
+                if (!value || isNaN(value) || Number(value) <= 0)
+                    errorMsg = 'Quantity must be a positive number.';
+                break;
+            case 'unitPrice':
+                if (!value || isNaN(value) || Number(value) <= 0)
+                    errorMsg = 'Unit Price must be a positive number.';
+                break;
+            default:
+                break;
+        }
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
+    };
+
+    const validateForm = () => {
+        const validationErrors = {};
+
+        validateField('productName', stock.productName);
+        validateField('category', stock.category);
+        validateField('quantity', stock.quantity);
+        validateField('unitPrice', stock.unitPrice);
+
+        return !Object.values(validationErrors).some((error) => error);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        StockService.updateStock({ ...stock, id })
-            .then((response) => {
-                alert('Stock updated successfully');
-                setId('');
-                setStock({
-                    productName: '',
-                    category: '',
-                    quantity: '',
-                    unitPrice: ''
+        if (validateForm()) {
+            StockService.updateStock(stock)
+                .then(() => {
+                    alert('Stock updated successfully!');
+                })
+                .catch((error) => {
+                    console.error('Error updating stock:', error);
+                    alert('Error updating stock. Please try again.');
                 });
-            })
-            .catch((error) => {
-                alert('There was an error updating the stock! ' + error);
-            });
+        } else {
+            alert('Please correct the errors in the form.');
+        }
     };
 
     return (
@@ -48,20 +80,12 @@ const UpdateStock = () => {
             <Box component="form" onSubmit={handleSubmit} noValidate>
                 <FormControl fullWidth margin="normal">
                     <TextField
-                        label="Stock ID"
-                        type="number"
-                        value={id}
-                        onChange={(e) => setId(e.target.value)}
-                        placeholder="Enter Stock ID"
-                        required
-                    />
-                </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <TextField
                         label="Product Name"
                         name="productName"
                         value={stock.productName}
                         onChange={handleChange}
+                        error={!!errors.productName}
+                        helperText={errors.productName}
                         required
                     />
                 </FormControl>
@@ -71,6 +95,8 @@ const UpdateStock = () => {
                         name="category"
                         value={stock.category}
                         onChange={handleChange}
+                        error={!!errors.category}
+                        helperText={errors.category}
                         required
                     />
                 </FormControl>
@@ -81,6 +107,8 @@ const UpdateStock = () => {
                         name="quantity"
                         value={stock.quantity}
                         onChange={handleChange}
+                        error={!!errors.quantity}
+                        helperText={errors.quantity}
                         required
                     />
                 </FormControl>
@@ -91,6 +119,8 @@ const UpdateStock = () => {
                         name="unitPrice"
                         value={stock.unitPrice}
                         onChange={handleChange}
+                        error={!!errors.unitPrice}
+                        helperText={errors.unitPrice}
                         required
                     />
                 </FormControl>

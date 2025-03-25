@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TransactionService from '../Services/TransactionService';
+import StockService from '../Services/StockService';
+import { useUser } from '../Context/UserContext'; // Import the UserContext to get user details
 import {
     Box,
     Button,
@@ -11,53 +13,113 @@ import {
     InputLabel,
 } from '@mui/material';
 import '../styles.css';
-import StockService from '../Services/StockService';
 
 const UpdateTransaction = () => {
+    const { user } = useUser(); // Access the logged-in user's details
     const [transaction, setTransaction] = useState({
         id: '',
-        userId: '',
+        userId: user?.id || '', // Automatically pass userId
         type: '',
         paymentType: '',
         amount: '',
         transactionDate: '',
         source: '',
         expenseType: '',
-        quantity: '' // New field
+        quantity: '',
     });
 
-    const [products, setProducts] = useState([])
+    const [errors, setErrors] = useState({});
+    const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        StockService.getAllStocks().then(res => {
-            setProducts(res.data.map(product => product.productName))
-        })
-    },[])
+        // Fetch all available products (stocks)
+        StockService.getAllStocks(user?.id).then((res) => {
+            setProducts(res.data.map((product) => product.productName));
+        });
+    }, [user?.id]);
 
     const handleChange = (e) => {
         setTransaction({ ...transaction, [e.target.name]: e.target.value });
+        validateField(e.target.name, e.target.value);
+    };
+
+    const validateField = (name, value) => {
+        let errorMsg = '';
+
+        switch (name) {
+            case 'type':
+                if (!value) errorMsg = 'Type is required.';
+                break;
+            case 'paymentType':
+                if (!value) errorMsg = 'Payment Type is required.';
+                break;
+            case 'amount':
+                if (!value || isNaN(value) || Number(value) <= 0)
+                    errorMsg = 'Amount must be a positive number.';
+                break;
+            case 'transactionDate':
+                if (!value) errorMsg = 'Transaction Date is required.';
+                break;
+            case 'quantity':
+                if (
+                    (transaction.type === 'Revenue' || transaction.expenseType === 'Stock Purchase') &&
+                    (!value || isNaN(value) || Number(value) <= 0)
+                ) {
+                    errorMsg = 'Quantity must be a positive number.';
+                }
+                break;
+            case 'source':
+                if (
+                    (transaction.type === 'Revenue' || transaction.expenseType === 'Stock Purchase') &&
+                    !value
+                ) {
+                    errorMsg = 'Product Name is required.';
+                }
+                break;
+            default:
+                break;
+        }
+
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMsg }));
+    };
+
+    const validateForm = () => {
+        const validationErrors = {};
+        validateField('type', transaction.type);
+        validateField('paymentType', transaction.paymentType);
+        validateField('amount', transaction.amount);
+        validateField('transactionDate', transaction.transactionDate);
+        validateField('source', transaction.source);
+        validateField('quantity', transaction.quantity);
+
+        return !Object.values(validationErrors).some((error) => error);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        TransactionService.updateTransaction(transaction)
-            .then((response) => {
-                alert('Transaction updated successfully');
-                setTransaction({
-                    id: '',
-                    userId: '',
-                    type: '',
-                    paymentType: '',
-                    amount: '',
-                    transactionDate: '',
-                    source: '',
-                    expenseType: '',
-                    quantity: '' // Reset new field
+        if (validateForm()) {
+            TransactionService.updateTransaction(transaction)
+                .then(() => {
+                    alert('Transaction updated successfully');
+                    setTransaction({
+                        id: '',
+                        userId: user?.id || '', // Reset userId to the logged-in user
+                        type: '',
+                        paymentType: '',
+                        amount: '',
+                        transactionDate: '',
+                        source: '',
+                        expenseType: '',
+                        quantity: '',
+                    });
+                    setErrors({});
+                })
+                .catch((error) => {
+                    alert('There was an error updating the transaction! ' + error);
                 });
-            })
-            .catch((error) => {
-                alert('There was an error updating the transaction! ' + error);
-            });
+        } else {
+            alert('Please correct the errors in the form.');
+        }
     };
 
     return (
@@ -72,6 +134,8 @@ const UpdateTransaction = () => {
                         name="id"
                         value={transaction.id}
                         onChange={handleChange}
+                        error={!!errors.id}
+                        helperText={errors.id}
                         required
                     />
                 </FormControl>
@@ -80,8 +144,7 @@ const UpdateTransaction = () => {
                         label="User ID"
                         name="userId"
                         value={transaction.userId}
-                        onChange={handleChange}
-                        required
+                        disabled // Make the field read-only as it is set automatically
                     />
                 </FormControl>
                 <FormControl fullWidth margin="normal">
@@ -90,29 +153,73 @@ const UpdateTransaction = () => {
                         name="type"
                         value={transaction.type}
                         onChange={handleChange}
+                        error={!!errors.type}
                         required
                     >
                         <MenuItem value="">Select</MenuItem>
-                        <MenuItem value="Sale">Sale</MenuItem>
+                        <MenuItem value="Revenue">Sale</MenuItem>
                         <MenuItem value="Expense">Expense</MenuItem>
                     </Select>
+                    {errors.type && (
+                        <Typography color="error" variant="body2">
+                            {errors.type}
+                        </Typography>
+                    )}
                 </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <InputLabel>Payment Type</InputLabel>
-                    <Select
-                        name="paymentType"
-                        value={transaction.paymentType}
-                        onChange={handleChange}
-                        required
-                    >
-                        <MenuItem value="">Select</MenuItem>
-                        <MenuItem value="Cash">Cash</MenuItem>
-                        <MenuItem value="UPI">UPI</MenuItem>
-                        <MenuItem value="Credit Card">Credit Card</MenuItem>
-                        <MenuItem value="Debit Card">Debit Card</MenuItem>
-                        <MenuItem value="Other">Other</MenuItem>
-                    </Select>
-                </FormControl>
+                {transaction.type === 'Expense' && (
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Expense Type</InputLabel>
+                        <Select
+                            name="expenseType"
+                            value={transaction.expenseType}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value="">Select</MenuItem>
+                            <MenuItem value="Rent">Rent</MenuItem>
+                            <MenuItem value="Utilities">Utilities</MenuItem>
+                            <MenuItem value="Salary">Salary</MenuItem>
+                            <MenuItem value="Stock Purchase">Stock Purchase</MenuItem>
+                            <MenuItem value="Other">Other</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+                {(transaction.type === 'Revenue' || transaction.expenseType === 'Stock Purchase') && (
+                    <>
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Product Name</InputLabel>
+                            <Select
+                                name="source"
+                                value={transaction.source}
+                                onChange={handleChange}
+                                error={!!errors.source}
+                                required
+                            >
+                                {products.map((p) => (
+                                    <MenuItem key={p} value={p}>
+                                        {p}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            {errors.source && (
+                                <Typography color="error" variant="body2">
+                                    {errors.source}
+                                </Typography>
+                            )}
+                        </FormControl>
+                        <FormControl fullWidth margin="normal">
+                            <TextField
+                                label="Quantity"
+                                type="number"
+                                name="quantity"
+                                value={transaction.quantity}
+                                onChange={handleChange}
+                                error={!!errors.quantity}
+                                helperText={errors.quantity}
+                                required
+                            />
+                        </FormControl>
+                    </>
+                )}
                 <FormControl fullWidth margin="normal">
                     <TextField
                         label="Amount"
@@ -120,6 +227,8 @@ const UpdateTransaction = () => {
                         name="amount"
                         value={transaction.amount}
                         onChange={handleChange}
+                        error={!!errors.amount}
+                        helperText={errors.amount}
                         required
                     />
                 </FormControl>
@@ -131,41 +240,32 @@ const UpdateTransaction = () => {
                         value={transaction.transactionDate}
                         onChange={handleChange}
                         InputLabelProps={{ shrink: true }}
+                        error={!!errors.transactionDate}
+                        helperText={errors.transactionDate}
                         required
                     />
                 </FormControl>
                 <FormControl fullWidth margin="normal">
-                    <InputLabel>Product Name</InputLabel>
+                    <InputLabel>Payment Type</InputLabel>
                     <Select
-                        name="source"
-                        value={transaction.source}
+                        name="paymentType"
+                        value={transaction.paymentType}
                         onChange={handleChange}
+                        error={!!errors.paymentType}
                         required
                     >
-                        {products.map((p) => (
-                            <MenuItem key={p} value={p}>
-                                {p}
-                            </MenuItem>
-                        ))}
+                        <MenuItem value="">Select</MenuItem>
+                        <MenuItem value="Cash">Cash</MenuItem>
+                        <MenuItem value="UPI">UPI</MenuItem>
+                        <MenuItem value="Credit Card">Credit Card</MenuItem>
+                        <MenuItem value="Debit Card">Debit Card</MenuItem>
+                        <MenuItem value="Other">Other</MenuItem>
                     </Select>
-                </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Expense Type"
-                        name="expenseType"
-                        value={transaction.expenseType}
-                        onChange={handleChange}
-                    />
-                </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <TextField
-                        label="Quantity"
-                        type="number"
-                        name="quantity"
-                        value={transaction.quantity}
-                        onChange={handleChange}
-                        required
-                    />
+                    {errors.paymentType && (
+                        <Typography color="error" variant="body2">
+                            {errors.paymentType}
+                        </Typography>
+                    )}
                 </FormControl>
                 <Button
                     type="submit"
@@ -178,103 +278,7 @@ const UpdateTransaction = () => {
                 </Button>
             </Box>
         </Box>
-    )
-    // return (
-    //     <>
-    //         <h2>Update Transaction</h2>
-    //         <form className="form-container" onSubmit={handleSubmit}>
-    //             <div className="form-group">
-    //                 <label>Transaction ID:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="id"
-    //                     value={transaction.id}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>User ID:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="userId"
-    //                     value={transaction.userId}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Type:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="type"
-    //                     value={transaction.type}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Payment Type:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="paymentType"
-    //                     value={transaction.paymentType}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Amount:</label>
-    //                 <input
-    //                     type="number"
-    //                     name="amount"
-    //                     value={transaction.amount}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Transaction Date:</label>
-    //                 <input
-    //                     type="date"
-    //                     name="transactionDate"
-    //                     value={transaction.transactionDate}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Source:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="source"
-    //                     value={transaction.source}
-    //                     onChange={handleChange}
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Expense Type:</label>
-    //                 <input
-    //                     type="text"
-    //                     name="expenseType"
-    //                     value={transaction.expenseType}
-    //                     onChange={handleChange}
-    //                 />
-    //             </div>
-    //             <div className="form-group">
-    //                 <label>Quantity:</label> {/* New input field */}
-    //                 <input
-    //                     type="number"
-    //                     name="quantity"
-    //                     value={transaction.quantity}
-    //                     onChange={handleChange}
-    //                     required
-    //                 />
-    //             </div>
-    //             <button type="submit">Update Transaction</button>
-    //         </form>
-    //     </>
-    // );
+    );
 };
 
 export default UpdateTransaction;

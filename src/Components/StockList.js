@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // For navigation to UpdateStock
 import StockService from '../Services/StockService';
 import {
     Box,
     Button,
-    CircularProgress,
     Table,
     TableBody,
     TableCell,
@@ -13,13 +13,14 @@ import {
     Typography,
     Paper,
 } from '@mui/material';
-import '../styles.css';
 import { useUser } from '../Context/UserContext';
+import '../styles.css';
 
 const StockList = () => {
-    const [stocks, setStocks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const { user } = useUser();
+    const [stocks, setStocks] = useState([]); // State to store stock data
+    const [loading, setLoading] = useState(true); // Loading state for API calls
+    const { user } = useUser(); // Access user details via context
+    const navigate = useNavigate(); // For navigation to edit/delete pages
 
     useEffect(() => {
         const fetchStocks = async () => {
@@ -27,9 +28,10 @@ const StockList = () => {
                 try {
                     const response = await StockService.getStocksByUserId(user.id);
                     setStocks(response.data);
-                    setLoading(false);
                 } catch (error) {
                     console.error('Error fetching stocks:', error);
+                    alert('Failed to fetch stocks. Please try again later.');
+                } finally {
                     setLoading(false);
                 }
             }
@@ -62,20 +64,11 @@ const StockList = () => {
             </div>
         );
     }
-
     return (
         <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: 2 }}>
             <Typography variant="h4" component="h2" gutterBottom>
                 Stocks List
             </Typography>
-            {/* <Button
-                variant="contained"
-                color="primary"
-                onClick={downloadMonthlyReport}
-                sx={{ marginBottom: 2 }}
-            >
-                Download Monthly Report
-            </Button> */}
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -86,6 +79,7 @@ const StockList = () => {
                             <TableCell>Unit Price</TableCell>
                             <TableCell>Total Value</TableCell>
                             <TableCell>Created At</TableCell>
+                            <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -97,6 +91,26 @@ const StockList = () => {
                                 <TableCell>${stock.unitPrice}</TableCell>
                                 <TableCell>${stock.totalValue}</TableCell>
                                 <TableCell>{new Date(stock.createdAt).toLocaleString()}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="small"
+                                        sx={{ marginRight: 1 }}
+                                        onClick={() =>
+                                            navigate(`/inventory/edit/${stock.id}`, { state: { stock }, })}
+                                    > 
+                                        Edit
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        size="small"
+                                        onClick={() => navigate(`/inventory/delete/${stock.id}`, { state: { stock }, })} // Handle Delete
+                                    >
+                                        Delete
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

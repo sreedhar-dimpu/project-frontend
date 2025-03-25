@@ -26,6 +26,7 @@ import InventoryDetail from '../Components/GetStockById';
 import AddInventory from '../Components/AddStock';
 import UpdateInventory from '../Components/UpdateStock';
 import DeleteInventory from '../Components/DeleteStock'
+import { SupervisedUserCircleRounded } from '@mui/icons-material';
 
 // Routes configuration with nested routes
 export const routes = [
@@ -103,13 +104,13 @@ export const routes = [
         exact: true,
         hideInMenu: true
       },
-      {
-        path: "add",
-        name: "Add New",
-        component: AddExpense,
-        exact: true,
-        hideOnAccountant: true
-      },
+      // {
+      //   path: "add",
+      //   name: "Add New",
+      //   component: AddExpense,
+      //   exact: true,
+      //   hideOnAccountant: true
+      // },
       {
         path: "edit",
         name: "Update",
@@ -149,13 +150,13 @@ export const routes = [
         exact: true,
         hideInMenu: true
       },
-      {
-        path: "add",
-        name: "Add New",
-        component: AddSale,
-        exact: true,
-        hideOnAccountant: true
-      },
+      // {
+      //   path: "add",
+      //   name: "Add New",
+      //   component: AddSale,
+      //   exact: true,
+      //   hideOnAccountant: true
+      // },
       {
         path: "edit",
         name: "Update",
@@ -207,6 +208,22 @@ export const routes = [
       },
     ],
   },
+
+  {
+    path: "/users",
+    name: "Users",
+    icon: <SupervisedUserCircleRounded />,
+    hideOnAccountant: true,
+    children:
+    [
+       {
+         path:"",
+         name:"View All Users", 
+         component :UsersList, 
+         hideOnAccountant: true
+        }
+     ]
+  }
 ];
 
 // Function to generate full paths for nested routes
