@@ -79,7 +79,7 @@ const GetUserById = () => {
     return (
         <Box sx={{ maxWidth: 600, margin: '0 auto', padding: 2 }}>
             <Typography variant="h4" component="h2" gutterBottom>
-                Get User By ID
+                Profile Details
             </Typography>
             {error && (
                 <Typography variant="body1" color="error" sx={{ marginBottom: 2 }}>

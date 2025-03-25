@@ -102,8 +102,8 @@ const ExpenseList = () => {
                                 </TableCell>
                                 <TableCell>{expense.expenseType}</TableCell>
                                 <TableCell>{expense.source}</TableCell>
-                                <TableCell>{expense.unitsPurchased}</TableCell>
-                                <TableCell>{expense.amount}</TableCell>
+                                <TableCell>{expense.unitsPurchased} Units</TableCell>
+                                <TableCell>${expense.amount}</TableCell>
                                 <TableCell>{new Date(expense.paidDate).toLocaleDateString()}</TableCell>
                                 <TableCell>{new Date(expense.createdAt).toLocaleString()}</TableCell>
                             </TableRow>

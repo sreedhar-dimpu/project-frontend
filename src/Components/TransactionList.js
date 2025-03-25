@@ -117,11 +117,11 @@ const TransactionsList = () => {
                                 <TableCell>{transaction.userId}</TableCell>
                                 <TableCell>{transaction.type}</TableCell>
                                 <TableCell>{transaction.paymentType}</TableCell>
-                                <TableCell>{transaction.amount}</TableCell>
+                                <TableCell>${transaction.amount}</TableCell>
                                 <TableCell>{new Date(transaction.transactionDate).toLocaleDateString()}</TableCell>
                                 <TableCell>{transaction.source}</TableCell>
                                 <TableCell>{transaction.expenseType}</TableCell>
-                                <TableCell>{transaction.quantity}</TableCell>
+                                <TableCell>{transaction.quantity} Units</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

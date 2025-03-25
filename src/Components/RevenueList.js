@@ -115,10 +115,10 @@ const RevenueList = () => {
                                     </Link>
                                 </TableCell>
                                 <TableCell>{revenue.source}</TableCell>
-                                <TableCell>{revenue.amount}</TableCell>
+                                <TableCell>${revenue.amount}</TableCell>
                                 <TableCell>{new Date(revenue.receivedDate).toLocaleDateString()}</TableCell>
                                 <TableCell>{new Date(revenue.createdAt).toLocaleString()}</TableCell>
-                                <TableCell>{revenue.unitsSold}</TableCell>
+                                <TableCell>{revenue.unitsSold} Units</TableCell>
                                 <TableCell>
                                     <Button
                                         variant="outlined"
