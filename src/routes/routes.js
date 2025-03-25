@@ -26,6 +26,7 @@ import InventoryDetail from '../Components/GetStockById';
 import AddInventory from '../Components/AddStock';
 import UpdateInventory from '../Components/UpdateStock';
 import DeleteInventory from '../Components/DeleteStock'
+import UsersList from './../Components/UsersList';
 import { SupervisedUserCircleRounded } from '@mui/icons-material';
 
 // Routes configuration with nested routes
