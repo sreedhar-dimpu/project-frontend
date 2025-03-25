@@ -25,12 +25,24 @@ const AddTransaction = () => {
         quantity: '' // New field
     });
 
+    const [user, setUser] = useState({})
+
     const [products, setProducts] = useState([])
 
     useEffect(() => {
         StockService.getAllStocks().then(res => {
             setProducts(res.data.map(product => product.productName))
         })
+        try{
+            const userString = localStorage.getItem('user')
+            if(userString){
+                const userObj = JSON.parse(userString)
+                setUser(userObj)
+                setTransaction({...transaction, userId: userObj.id})
+            }
+        }catch{
+            setUser({})
+        }
     },[])
 
     const handleChange = (e) => {
@@ -43,7 +55,7 @@ const AddTransaction = () => {
             .then((response) => {
                 alert('Transaction added successfully');
                 setTransaction({
-                    userId: '',
+                    userId: user?.id,
                     type: '',
                     paymentType: '',
                     amount: '',
@@ -68,6 +80,7 @@ const AddTransaction = () => {
                     <TextField
                         label="User ID"
                         name="userId"
+                        disabled
                         value={transaction.userId}
                         onChange={handleChange}
                         required

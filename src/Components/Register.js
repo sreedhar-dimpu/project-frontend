@@ -39,7 +39,7 @@ const Register = () => {
 
             if (response.status === 201) {
                 setSuccess('Registration successful! Redirecting to login...');
-                setTimeout(() => navigate('/login'), 2000); // Redirect after 2 seconds
+                setTimeout(() => navigate('/login'), 500); // Redirect after  seconds
             } else {
                 throw new Error('Unexpected response from the server');
             }

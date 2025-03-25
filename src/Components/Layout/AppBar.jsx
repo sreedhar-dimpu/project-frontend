@@ -40,7 +40,7 @@ const AppBar = ({onLogout, user}) => {
           {user?.role === 'Admin' ? 'Admin' : 'Accounting'} Software
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Typography variant={'p'}>{user?.username}</Typography>
+          <Typography variant={'p'}>{user?.name}</Typography>
           <Tooltip title={'Logout'}>
             <IconButton color="inherit" onClick={onLogout}>
               <LogoutIcon />
