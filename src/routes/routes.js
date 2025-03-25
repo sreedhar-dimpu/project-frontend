@@ -27,6 +27,8 @@ import AddInventory from '../Components/AddStock';
 import UpdateInventory from '../Components/UpdateStock';
 import DeleteInventory from '../Components/DeleteStock'
 import UsersList from './../Components/UsersList';
+import AddUser from './../Components/AddUser'
+import GetUserById from './../Components/GetUserById';
 import { SupervisedUserCircleRounded } from '@mui/icons-material';
 
 // Routes configuration with nested routes
@@ -222,6 +224,17 @@ export const routes = [
          name:"View All Users", 
          component :UsersList, 
          hideOnAccountant: true
+        },
+        {
+          path:"/add",
+          name:"Add User", 
+          component :AddUser, 
+          hideOnAccountant: true
+        },
+        {
+          path:"/profile",
+          name:"Your Profile", 
+          component :GetUserById, 
         }
      ]
   }

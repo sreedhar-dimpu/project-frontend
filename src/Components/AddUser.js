@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import UserService from '../Services/UserService';
-import '../styles.css';
+import {
+    Box,
+    Button,
+    TextField,
+    Typography,
+    MenuItem,
+    Paper,
+    Grid,
+} from '@mui/material';
 
 const AddUser = () => {
     const [user, setUser] = useState({
@@ -20,7 +28,7 @@ const AddUser = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         UserService.addUser(user)
-            .then((response) => {
+            .then(() => {
                 alert('User added successfully');
                 setUser({
                     name: '',
@@ -38,81 +46,98 @@ const AddUser = () => {
     };
 
     return (
-        <>
-            <h2>Add User</h2>
-            <form className="form-container" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={user.name}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={user.email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={user.password}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Role:</label>
-                    <select
-                        name="role"
-                        value={user.role}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select role</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Accountant">Accountant</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label>Business Name:</label>
-                    <input
-                        type="text"
-                        name="business_name"
-                        value={user.business_name}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="form-group">
-                    <label>GST Number:</label>
-                    <input
-                        type="text"
-                        name="gst_number"
-                        value={user.gst_number}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Address:</label>
-                    <textarea
-                        name="address"
-                        value={user.address}
-                        onChange={handleChange}
-                    />
-                </div>
-                <button type="submit">Add User</button>
-            </form>
-        </>
+        <Box sx={{ maxWidth: 600, margin: '0 auto', padding: 3 }}>
+            <Paper elevation={3} sx={{ padding: 3 }}>
+                <Typography variant="h4" component="h2" gutterBottom>
+                    Add User
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Name"
+                                name="name"
+                                value={user.name}
+                                onChange={handleChange}
+                                fullWidth
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Email"
+                                name="email"
+                                type="email"
+                                value={user.email}
+                                onChange={handleChange}
+                                fullWidth
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Password"
+                                name="password"
+                                type="password"
+                                value={user.password}
+                                onChange={handleChange}
+                                fullWidth
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                select
+                                label="Role"
+                                name="role"
+                                value={user.role}
+                                onChange={handleChange}
+                                fullWidth
+                                required
+                            >
+                                <MenuItem value="">Select Role</MenuItem>
+                                <MenuItem value="Admin">Admin</MenuItem>
+                                <MenuItem value="Accountant">Accountant</MenuItem>
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Business Name"
+                                name="business_name"
+                                value={user.business_name}
+                                onChange={handleChange}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="GST Number"
+                                name="gst_number"
+                                value={user.gst_number}
+                                onChange={handleChange}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Address"
+                                name="address"
+                                value={user.address}
+                                onChange={handleChange}
+                                fullWidth
+                                multiline
+                                rows={4}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button type="submit" variant="contained" color="primary" fullWidth>
+                                Add User
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </form>
+            </Paper>
+        </Box>
     );
 };
 
