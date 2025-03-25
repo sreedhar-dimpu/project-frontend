@@ -12,7 +12,9 @@ import {
     Typography,
     Paper,
     TextField,
+    Button,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import navigate hook for routing
 import '../styles.css';
 
 const UsersList = () => {
@@ -20,6 +22,7 @@ const UsersList = () => {
     const [filteredUsers, setFilteredUsers] = useState([]); // Holds filtered users
     const [searchTerm, setSearchTerm] = useState(''); // Holds the search input
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate(); // Hook for navigating between components
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -51,6 +54,10 @@ const UsersList = () => {
                     user.address.toLowerCase().includes(term)
             )
         );
+    };
+
+    const handleDelete = (userId) => {
+        navigate(`/users/delete/${userId}`, { state: { userId } });
     };
 
     if (loading) {
@@ -91,6 +98,7 @@ const UsersList = () => {
                             <TableCell>GST Number</TableCell>
                             <TableCell>Address</TableCell>
                             <TableCell>Created At</TableCell>
+                            <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -104,6 +112,16 @@ const UsersList = () => {
                                 <TableCell>{user.gstNumber}</TableCell>
                                 <TableCell>{user.address}</TableCell>
                                 <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        size="small"
+                                        onClick={() => handleDelete(user.id)} // Pass user ID to DeleteUser
+                                    >
+                                        Delete
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

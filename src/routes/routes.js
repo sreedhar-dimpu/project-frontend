@@ -30,6 +30,7 @@ import UsersList from './../Components/UsersList';
 import AddUser from './../Components/AddUser'
 import GetUserById from './../Components/GetUserById';
 import { SupervisedUserCircleRounded } from '@mui/icons-material';
+import DeleteUser from '../Components/DeleteUser';
 
 // Routes configuration with nested routes
 export const routes = [
@@ -56,6 +57,7 @@ export const routes = [
         name: "Transaction By ID",
         component: TransactionDetail,
         exact: true,
+        hideInMenu: true
       },
       {
         path: "/details/:transactionId",
@@ -99,6 +101,7 @@ export const routes = [
         name: "Expense By ID",
         component: ExpenseDetail,
         exact: true,
+        hideInMenu: true
       },
       {
         path: "details/:id",
@@ -107,19 +110,18 @@ export const routes = [
         exact: true,
         hideInMenu: true
       },
-      // {
-      //   path: "add",
-      //   name: "Add New",
-      //   component: AddExpense,
-      //   exact: true,
-      //   hideOnAccountant: true
-      // },
+      {
+        path: "add",
+        name: "Add New",
+        component: AddExpense,
+        exact: true,
+        hideInMenu: true
+      },
       {
         path: "edit",
         name: "Update",
         component: UpdateExpense,
         exact: true,
-        hideOnAccountant: true
       },
       {
         path: "delete",
@@ -145,6 +147,7 @@ export const routes = [
         name: "Sale By ID",
         component: SaleDetail,
         exact: true,
+        hideInMenu: true
       },
       {
         path: "details/:id",
@@ -165,7 +168,6 @@ export const routes = [
         name: "Update",
         component: UpdateSale,
         exact: true,
-        hideOnAccountant: true
       },
       {
         path: "delete",
@@ -191,6 +193,7 @@ export const routes = [
         name: "Inventory By ID",
         component: InventoryDetail,
         exact: true,
+        hideInMenu: true,
       },
       {
         path: "add",
@@ -216,7 +219,6 @@ export const routes = [
     path: "/users",
     name: "Users",
     icon: <SupervisedUserCircleRounded />,
-    hideOnAccountant: true,
     children:
     [
        {
@@ -235,6 +237,12 @@ export const routes = [
           path:"/profile",
           name:"Your Profile", 
           component :GetUserById, 
+        },
+        {
+          path:"delete/:id",
+          name:"Delete", 
+          component :DeleteUser,
+          hideInMenu: true, 
         }
      ]
   }

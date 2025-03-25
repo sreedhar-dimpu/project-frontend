@@ -1,43 +1,53 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom'; // Import hooks for routing
 import UserService from '../Services/UserService';
-import '../styles.css';
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Paper,
+} from '@mui/material';
 
 const DeleteUser = () => {
-    const [userId, setUserId] = useState('');
-
-    const handleChange = (e) => {
-        setUserId(e.target.value);
-    };
+    const location = useLocation(); // Access state passed from UsersList
+    const navigate = useNavigate(); // Hook for redirecting after deletion
+    const [userId, setUserId] = React.useState(location.state?.userId || ''); // Prefill userId from state
 
     const handleSubmit = (e) => {
         e.preventDefault();
         UserService.deleteUser(userId)
-            .then((response) => {
+            .then(() => {
                 alert('User deleted successfully');
-                setUserId('');
+                navigate('/users'); // Redirect back to UsersList
             })
             .catch((error) => {
-                alert('There was an error deleting the user!' + error);
+                alert('There was an error deleting the user: ' + error.message);
             });
     };
 
     return (
-        <>
-            <h2>Delete User</h2>
-            <form className="form-container" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>User ID:</label>
-                    <input
-                        type="text"
+        <Box sx={{ maxWidth: 600, margin: '0 auto', padding: 2 }}>
+            <Paper elevation={3} sx={{ padding: 3 }}>
+                <Typography variant="h4" component="h2" gutterBottom>
+                    Delete User
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        label="User ID"
                         name="userId"
                         value={userId}
-                        onChange={handleChange}
+                        onChange={(e) => setUserId(e.target.value)}
+                        fullWidth
                         required
+                        margin="normal"
                     />
-                </div>
-                <button type="submit">Delete User</button>
-            </form>
-        </>
+                    <Button type="submit" variant="contained" color="error" fullWidth>
+                        Confirm Delete
+                    </Button>
+                </form>
+            </Paper>
+        </Box>
     );
 };
 
