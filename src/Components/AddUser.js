@@ -21,12 +21,31 @@ const AddUser = () => {
         address: '',
     });
 
+    const [errors, setErrors] = useState({});
+
+    const validate = () => {
+        const newErrors = {};
+        if (!user.name) newErrors.name = 'Name is required';
+        if (!user.email) newErrors.email = 'Email is required';
+        else if (!/\S+@\S+\.\S+/.test(user.email)) newErrors.email = 'Email is invalid';
+        if (!user.password) newErrors.password = 'Password is required';
+        else if (user.password.length < 6) newErrors.password = 'Password must be at least 6 characters long';
+        if (!user.role) newErrors.role = 'Role is required';
+        if (user.gst_number && user.gst_number.length !== 15) newErrors.gst_number = 'GST Number must be 15 characters long';
+        return newErrors;
+    };
+
     const handleChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const validationErrors = validate();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
         UserService.addUser(user)
             .then(() => {
                 alert('User added successfully');
@@ -39,9 +58,10 @@ const AddUser = () => {
                     gst_number: '',
                     address: '',
                 });
+                setErrors({});
             })
             .catch((error) => {
-                alert('There was an error adding the user!' + error);
+                alert('There was an error adding the user! ' + error);
             });
     };
 
@@ -61,6 +81,8 @@ const AddUser = () => {
                                 onChange={handleChange}
                                 fullWidth
                                 required
+                                error={!!errors.name}
+                                helperText={errors.name}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -72,6 +94,8 @@ const AddUser = () => {
                                 onChange={handleChange}
                                 fullWidth
                                 required
+                                error={!!errors.email}
+                                helperText={errors.email}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -83,6 +107,8 @@ const AddUser = () => {
                                 onChange={handleChange}
                                 fullWidth
                                 required
+                                error={!!errors.password}
+                                helperText={errors.password}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -94,6 +120,8 @@ const AddUser = () => {
                                 onChange={handleChange}
                                 fullWidth
                                 required
+                                error={!!errors.role}
+                                helperText={errors.role}
                             >
                                 <MenuItem value="">Select Role</MenuItem>
                                 <MenuItem value="Admin">Admin</MenuItem>
@@ -116,6 +144,8 @@ const AddUser = () => {
                                 value={user.gst_number}
                                 onChange={handleChange}
                                 fullWidth
+                                error={!!errors.gst_number}
+                                helperText={errors.gst_number}
                             />
                         </Grid>
                         <Grid item xs={12}>

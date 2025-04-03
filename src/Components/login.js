@@ -45,7 +45,17 @@ const Login = ({ onLoginSuccess }) => {
     return (
         <Box sx={{width: '420px', margin: '2rem auto'}}>
         <Card sx={{padding: '1rem'}}>
-            <Typography variant="h2" > Login </Typography>
+        <Typography 
+  variant="h4" 
+  sx={{
+    textAlign: 'center', 
+    fontWeight: 'bold', 
+    color: 'primary.main', 
+    marginBottom: 3,
+  }}
+>
+  Login
+</Typography>
             {error && <Typography variant="p" color="error">{error}</Typography>}
             {success && <Typography variant="p"  color="success">{success}</Typography>}
             <Box component={'form'} onSubmit={handleLogin}>

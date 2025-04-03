@@ -17,27 +17,27 @@ import {
 } from '@mui/material';
 
 const GetUserById = () => {
-    const { user } = useUser(); // Get the logged-in user's details
-    const [userDetails, setUserDetails] = useState(null); // Holds fetched user data
-    const [error, setError] = useState(''); // Error message for any issues while fetching data
-    const [loading, setLoading] = useState(true); // Loading state for feedback
-    const [isEditing, setIsEditing] = useState(false); // Toggle editing mode
-    const [updatedUser, setUpdatedUser] = useState({}); // Holds user data for updating
+    const { user } = useUser(); 
+    const [userDetails, setUserDetails] = useState(null); 
+    const [error, setError] = useState(''); 
+    const [loading, setLoading] = useState(true); 
+    const [isEditing, setIsEditing] = useState(false);
+    const [updatedUser, setUpdatedUser] = useState({}); 
 
     useEffect(() => {
         if (user && user.id) {
             UserService.getUserById(user.id)
                 .then((response) => {
-                    setUserDetails(response.data); // Populate user details
-                    setUpdatedUser(response.data); // Prefill the editable form data
-                    setError(''); // Clear errors
+                    setUserDetails(response.data); 
+                    setUpdatedUser(response.data); 
+                    setError(''); 
                 })
                 .catch((error) => {
                     setError('Error fetching user details: ' + error.message);
-                    setUserDetails(null); // Clear details on error
+                    setUserDetails(null);
                 })
                 .finally(() => {
-                    setLoading(false); // Turn off loading spinner
+                    setLoading(false); 
                 });
         } else {
             setError('User is not logged in or no user ID is available.');
@@ -46,7 +46,7 @@ const GetUserById = () => {
     }, []);
 
     const handleEditToggle = () => {
-        setIsEditing(!isEditing); // Toggle the editing mode
+        setIsEditing(!isEditing); 
     };
 
     const handleChange = (e) => {
@@ -59,7 +59,7 @@ const GetUserById = () => {
             .then(() => {
                 alert('User updated successfully');
                 setUserDetails(updatedUser); // Update the displayed user details
-                setIsEditing(false); // Exit editing mode
+                setIsEditing(false); 
             })
             .catch((error) => {
                 alert('There was an error updating the user: ' + error.message);

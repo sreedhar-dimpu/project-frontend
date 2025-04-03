@@ -18,8 +18,8 @@ const Home = () => {
   useEffect(() => {
     const fetchTotalSales = async () => {
         try {
-            if (user && user.id) { // Ensure user and user.id exist
-              const response = await RevenueService.getTotalRevenueByMonthAndUserId(year, month, user.id); // Use user.id here
+            if (user && user.id) { 
+              const response = await RevenueService.getTotalRevenueByMonthAndUserId(year, month, user.id); 
               setTotalSales(response.data);
             }
           } catch (error) {
@@ -29,8 +29,8 @@ const Home = () => {
 
     const fetchTotalExpenses = async () => {
         try {
-          if (user && user.id) { // Ensure user and user.id exist
-            const response = await ExpenseService.getTotalExpensesByMonthAndUserId(year, month, user.id); // Use user.id here
+          if (user && user.id) { 
+            const response = await ExpenseService.getTotalExpensesByMonthAndUserId(year, month, user.id); 
             setTotalExpenses(response.data);
           }
         } catch (error) {
@@ -42,7 +42,7 @@ const Home = () => {
     const fetchTotalStock = async () => {
         try {
           if (user && user.id) { // Ensure user and user.id exist
-            const response = await StockService.getMonthlyStocksQuantity(year, month, user.id); // Call the method
+            const response = await StockService.getMonthlyStocksQuantity(year, month, user.id); 
             setTotalStock(response.data); // Set total stock quantity
           }
         } catch (error) {
